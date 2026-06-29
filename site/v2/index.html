@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Porsche Executive Dashboard V2</title>
+    <title>Porsche Executive AI Dashboard V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -15,227 +15,251 @@
     <style>
         :root {
             --porsche-red: #D5001C;
-            --porsche-dark: #0F1012; /* Preto Fosco */
-            --porsche-graphite: #1A1C1F; /* Grafite Escuro */
-            --porsche-silver: #D1D5DB; /* Prata */
-            --porsche-gold: #D4AF37; /* Detalhes em Dourado */
-            --porsche-line: rgba(255,255,255,0.08);
-            --text-light: #F3F4F6;
+            --porsche-dark: #0A0B0D; /* Preto Fosco Profundo */
+            --porsche-graphite: #141619; /* Grafite de Luxo */
+            --porsche-card-bg: #1B1D22; /* Fundo dos Cartões */
+            --porsche-silver: #E5E7EB; /* Prata Polido */
+            --porsche-gold: #D4AF37; /* Dourado Premium */
+            --porsche-line: rgba(255,255,255,0.06);
+            --text-light: #F9FAFB;
             --text-muted: #9CA3AF;
         }
 
+        html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background-color: var(--porsche-dark); color: var(--text-light); padding-bottom: 50px; }
-
-        nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1.2rem 3rem; background: rgba(15, 16, 18, 0.9);
-            backdrop-filter: blur(10px); border-bottom: 1px solid var(--porsche-line);
+        
+        body {
+            background-color: var(--porsche-dark);
+            color: var(--text-light);
+            line-height: 1.6;
         }
-        nav .logo { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.25em; color: var(--porsche-silver); text-transform: uppercase; }
+
+        /* Menu Superior */
+        nav {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 1.2rem 3rem; 
+            background: rgba(10, 11, 13, 0.9);
+            backdrop-filter: blur(20px); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--porsche-line);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        nav .logo { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            letter-spacing: 0.3em; 
+            color: var(--porsche-silver); 
+            text-transform: uppercase; 
+        }
         nav .logo span { color: var(--porsche-gold); }
 
+        /* Abas Interativas (Tabs) */
+        .tabs-container { display: flex; gap: 1rem; }
+        .tab-btn {
+            background: transparent; color: var(--text-muted); border: none;
+            padding: 0.6rem 1.2rem; font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.15em; cursor: pointer;
+            border-radius: 6px; transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        .tab-btn:hover { color: var(--porsche-silver); background: rgba(255,255,255,0.03); }
+        .tab-btn.active {
+            color: var(--text-light); background: rgba(213, 0, 28, 0.1);
+            border-color: var(--porsche-red); box-shadow: 0 0 15px rgba(213,0,28,0.2);
+        }
+
+        /* Seções de Conteúdo das Abas */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Banner Principal com Degradê Metálico e Silhueta do Porsche */
         .hero {
-            padding: 3.5rem 2rem; text-align: center; background: radial-gradient(circle at center, #1A1C1F 0%, var(--porsche-dark) 100%);
-            border-bottom: 1px solid var(--porsche-line);
+            position: relative; overflow: hidden; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
+            padding: 5rem 2rem; border-bottom: 1px solid var(--porsche-line);
+            background: radial-gradient(circle at center, #181A1F 0%, var(--porsche-dark) 100%);
         }
-        .hero h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.8rem; color: var(--porsche-silver); }
-        .hero p { color: var(--text-muted); font-size: 0.95rem; font-weight: 300; }
+        
+        /* Silhueta de Alta Fidelidade Vetorial (Traço Realista da Porsche) */
+        .hero-silhouette {
+            width: 100%; max-width: 650px; height: auto; margin-bottom: 2rem;
+            filter: drop-shadow(0 0 25px rgba(213, 0, 28, 0.4)); opacity: 0.9;
+        }
 
-        .container { padding: 2rem 3rem; max-width: 1600px; margin: 0 auto; }
+        /* Título com Degradê (Gold/Silver Metallic) nas Próprias Fontes */
+        .hero h1 { 
+            font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: 0.25em; 
+            margin-bottom: 1rem; text-transform: uppercase;
+            background: linear-gradient(135deg, #FFF 30%, var(--porsche-silver) 60%, var(--porsche-gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1rem; color: var(--text-muted); max-width: 750px; font-weight: 300; letter-spacing: 0.05em; }
 
+        .container { padding: 3rem; max-width: 1600px; margin: 0 auto; }
+
+        /* Filtros Corporativos */
         .filters {
-            display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; padding: 1.5rem;
-            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex; gap: 1.2rem; margin-bottom: 2.5rem; flex-wrap: wrap; padding: 1.5rem;
+            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 14px; 
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
-        .filter-group { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; min-width: 200px; }
-        .filter-group label { font-size: 0.7rem; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        .filter-group { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 220px; }
+        .filter-group label { font-size: 0.7rem; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
         .filter-group select {
-            background: var(--porsche-dark); color: var(--text-light); border: 1px solid rgba(255,255,255,0.1); padding: 0.7rem; border-radius: 6px;
-            font-size: 0.85rem; outline: none;
+            background: var(--porsche-dark); color: var(--text-light); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem 1rem; border-radius: 8px;
+            font-size: 0.9rem; outline: none; transition: all 0.3s; font-weight: 500;
         }
+        .filter-group select:focus { border-color: var(--porsche-gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
 
-        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        /* KPIs Avançados com Respostas de Destaques Rápidos */
+        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 2.5rem; }
         .kpi-card {
-            background: var(--porsche-graphite); padding: 1.5rem; border-radius: 12px;
-            border: 1px solid var(--porsche-line); border-top: 3px solid var(--porsche-red);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); transition: transform 0.2s;
+            background: var(--porsche-card-bg); padding: 2rem; border-radius: 14px;
+            border: 1px solid var(--porsche-line); border-top: 4px solid var(--porsche-red); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.45); transition: transform 0.3s, border-color 0.3s;
         }
-        .kpi-card:hover { transform: translateY(-3px); border-color: var(--porsche-gold); }
-        .kpi-card h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
-        .kpi-card .value { font-size: 2rem; font-weight: 700; color: var(--text-light); }
-
-        .map-box {
-            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        .kpi-card:hover { transform: translateY(-5px); border-color: var(--porsche-gold); }
+        .kpi-card h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.8rem; font-weight: 600; }
+        .kpi-card .value { font-size: 2.4rem; font-weight: 700; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        
+        /* Sub-info inteligente que responde perguntas de KPIs */
+        .kpi-highlight-box {
+            margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.8rem; color: var(--porsche-silver); display: flex; flex-direction: column; gap: 0.2rem;
         }
-        .map-box h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; color: var(--porsche-silver); border-left: 3px solid var(--porsche-red); padding-left: 10px; }
-        #mapa-porsche { height: 400px; width: 100%; border-radius: 8px; background: #111; }
+        .kpi-highlight-box span strong { color: var(--porsche-gold); font-weight: 600; }
 
-        .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .chart-box { background: var(--porsche-graphite); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--porsche-line); box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .chart-box h3 { font-size: 1rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--porsche-silver); }
+        /* Bloco do Mapa */
+        .map-wrapper {
+            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 14px; padding: 2rem; 
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4); margin-bottom: 2.5rem;
+        }
+        .map-wrapper h2 { font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.2rem; border-left: 4px solid var(--porsche-red); padding-left: 12px; color: var(--porsche-silver); }
+        #porsche-map { height: 480px; width: 100%; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: #0c0d0e; }
 
-        @media(max-width: 768px) { .container { padding: 1rem; } .charts { grid-template-columns: 1fr; } nav { padding: 1rem; } }
+        /* Gráficos */
+        .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+        .chart-box { background: var(--porsche-graphite); padding: 2rem; border-radius: 14px; border: 1px solid var(--porsche-line); box-shadow: 0 25px 45px rgba(0,0,0,0.4); }
+        .chart-box h2 { font-size: 1.05rem; margin-bottom: 1.5rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--porsche-silver); border-left: 3px solid var(--porsche-gold); padding-left: 10px; }
+
+        /* Vitrine de Cards */
+        .showcase-title { font-size: 1.3rem; margin-bottom: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--porsche-silver); padding-bottom: 0.8rem; border-bottom: 1px solid var(--porsche-line); }
+        .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 2rem; }
+        .car-card {
+            background: var(--porsche-card-bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--porsche-line);
+            transition: all 0.3s ease; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        .car-card:hover { border-color: var(--porsche-gold); transform: translateY(-5px); box-shadow: 0 25px 50px rgba(0,0,0,0.6); }
+        .car-card-content { padding: 1.8rem; }
+        .car-card-badge { display: inline-block; margin-bottom: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 4px; background: rgba(213,0,28,0.1); color: #FFA3A3; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; border: 1px solid rgba(213,0,28,0.2); }
+        .car-card-city { font-size: 0.75rem; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.4rem; font-weight: 600; }
+        .car-card-model { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-light); }
+        .car-card-stats { display: flex; justify-content: space-between; color: var(--porsche-silver); font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; }
+
+        /* Rodapé Informativo */
+        .footer-info { background: var(--porsche-graphite); padding: 2rem; border-radius: 14px; border: 1px solid var(--porsche-line); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .footer-info h2 { margin-bottom: 1rem; font-weight: 600; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.12em; font-size: 1.1rem; }
+        .footer-info p { color: var(--porsche-silver); line-height: 1.8; font-size: 0.95rem; font-weight: 300; }
+
+        .leaflet-popup-content-wrapper { background: var(--porsche-card-bg) !important; color: var(--text-light) !important; border-radius: 10px !important; border: 1px solid var(--porsche-gold) !important; font-family: 'Montserrat', sans-serif !important; }
+        .leaflet-popup-tip { background: var(--porsche-card-bg) !important; border: 1px solid var(--porsche-gold) !important; }
+
+        @media (max-width: 1024px) { .charts-row { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .container { padding: 1.5rem; } nav { padding: 1rem; flex-direction: column; gap: 1.2rem; } }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">Porsche <span>Premium</span></div>
+        <div class="logo">Porsche <span>Intelligence</span></div>
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('geral')">Visão Geral</button>
+            <button class="tab-btn" onclick="switchTab('regional')">Análise Regional</button>
+            <button class="tab-btn" onclick="switchTab('modelos')">Showcase</button>
+        </div>
     </nav>
 
     <div class="hero">
-        <h1>Inteligência Automotiva</h1>
-        <p>Monitoramento dinâmico e performance executiva de vendas Porsche mercado EUA.</p>
+        <svg class="hero-silhouette" viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 120 C 80 118, 120 85, 170 70 C 230 50, 310 45, 390 47 C 460 49, 495 62, 530 85 C 555 100, 565 118, 580 120" stroke="#E5E7EB" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.4"/>
+            <path d="M40 120 L 130 120 C 140 100, 180 100, 190 120 L 410 120 C 420 100, 460 100, 470 120 L 560 120" stroke="#D5001C" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <circle cx="160" cy="120" r="16" stroke="#D4AF37" stroke-width="3.5" fill="#0A0B0D"/>
+            <circle cx="440" cy="120" r="16" stroke="#D4AF37" stroke-width="3.5" fill="#0A0B0D"/>
+        </svg>
+        <h1>Performance Executiva</h1>
+        <p>Painel estratégico avançado com respostas operacionais imediatas e distribuição por canais demográficos.</p>
     </div>
 
     <div class="container">
         <div class="filters">
             <div class="filter-group">
-                <label>Modelo</label>
-                <select id="f-model"><option value="ALL">Todos os Modelos</option></select>
+                <label>Linha de Modelo</label>
+                <select id="filtro-modelo"><option value="ALL">Todos os Modelos</option></select>
             </div>
             <div class="filter-group">
-                <label>Cidade</label>
-                <select id="f-city"><option value="ALL">Todas as Cidades</option></select>
+                <label>Região Demográfica</label>
+                <select id="filtro-cidade"><option value="ALL">Todas as Cidades</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Canal de Pagamento</label>
+                <select id="filtro-pagamento"><option value="ALL">Todos os Métodos</option></select>
             </div>
         </div>
 
         <div class="kpis">
             <div class="kpi-card">
-                <h3>Unidades Vendidas</h3>
+                <h3>Volume de Distribuição</h3>
                 <div class="value" id="kpi-qtd">0</div>
+                <div class="kpi-highlight-box">
+                    <span>Modelo Líder: <strong id="destaque-modelo">-</strong></span>
+                </div>
             </div>
             <div class="kpi-card" style="border-top-color: var(--porsche-gold);">
-                <h3>Faturamento Total</h3>
+                <h3>Faturamento Consolidado</h3>
                 <div class="value" id="kpi-valor">$ 0</div>
+                <div class="kpi-highlight-box">
+                    <span>Praça Destaque: <strong id="destaque-cidade">-</strong></span>
+                </div>
+            </div>
+            <div class="kpi-card" style="border-top-color: var(--porsche-silver);">
+                <h3>Eficiência de Portfólio</h3>
+                <div class="value" id="kpi-media">$ 0</div>
+                <div class="kpi-highlight-box">
+                    <span>Canal Principal: <strong id="destaque-pagamento">-</strong></span>
+                </div>
             </div>
         </div>
 
-        <div class="map-box">
-            <h3>Distribuição Geográfica Real (EUA)</h3>
-            <div id="mapa-porsche"></div>
-        </div>
-
-        <div class="charts">
-            <div class="chart-box">
-                <h3>Vendas por Modelo</h3>
-                <canvas id="chartModelos"></canvas>
-            </div>
-            <div class="chart-box">
-                <h3>Faturamento por Cidade</h3>
-                <canvas id="chartCidades"></canvas>
+        <div id="aba-geral" class="tab-content active">
+            <div class="charts-row">
+                <div class="chart-box">
+                    <h2>Volume de Vendas por Modelo</h2>
+                    <canvas id="chartModelos"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h2>Faturamento por Ano de Fabricação</h2>
+                    <canvas id="chartAnos"></canvas>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Dados simplificados para teste e garantia de funcionamento
-        const dadosPorsche = [
-            { modelo: "911 Turbo S", cidade: "Miami", preco: 210000 },
-            { modelo: "Cayenne S", cidade: "New York", preco: 95000 },
-            { modelo: "Taycan Turbo S", cidade: "Los Angeles", preco: 185000 },
-            { modelo: "911 GT3 RS", cidade: "Seattle", preco: 240000 },
-            { modelo: "Macan GTS", cidade: "Austin", preco: 85000 },
-            { modelo: "Panamera 4S", cidade: "Chicago", preco: 110000 }
-        ];
+        <div id="aba-regional" class="tab-content">
+            <div class="map-wrapper">
+                <h2>Mapeamento Comercial Ativo (EUA)</h2>
+                <div id="porsche-map"></div>
+            </div>
+        </div>
 
-        const coordenadas = {
-            "Miami": [25.7617, -80.1918], "New York": [40.7128, -74.0060],
-            "Los Angeles": [34.0522, -118.2437], "Seattle": [47.6062, -122.3321],
-            "Austin": [30.2672, -97.7431], "Chicago": [41.8781, -87.6298]
-        };
+        <div id="aba-modelos" class="tab-content">
+            <h2 class="showcase-title">Destaque por Demografia de Mercado</h2>
+            <div class="car-grid" id="car-grid"></div>
+        </div>
 
-        let map, markersGroup, graficoMod, graficoCid;
-
-        function init() {
-            // Preencher filtros
-            const modSel = document.getElementById('f-model');
-            const citSel = document.getElementById('f-city');
-            const modelos = [...new Set(dadosPorsche.map(d => d.modelo))];
-            const cidades = [...new Set(dadosPorsche.map(d => d.cidade))];
-            
-            modelos.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; modSel.appendChild(o); });
-            cidades.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; citSel.appendChild(o); });
-
-            // Inicializar Mapa Dark
-            map = L.map('mapa-porsche', { attributionControl: false }).setView([37.8, -96], 4);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-            markersGroup = L.layerGroup().addTo(map);
-
-            // Ouvir filtros
-            modSel.addEventListener('change', filtrar);
-            citSel.addEventListener('change', filtrar);
-
-            filtrar();
-        }
-
-        function filtrar() {
-            const mVal = document.getElementById('f-model').value;
-            const cVal = document.getElementById('f-city').value;
-
-            const filtrados = dadosPorsche.filter(d => {
-                if(mVal !== "ALL" && d.modelo !== mVal) return false;
-                if(cVal !== "ALL" && d.cidade !== cVal) return false;
-                return true;
-            });
-
-            // Atualizar KPIs
-            document.getElementById('kpi-qtd').textContent = filtrados.length;
-            const total = filtrados.reduce((a, b) => a + b.preco, 0);
-            document.getElementById('kpi-valor').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(total);
-
-            // Atualizar Marcadores do Mapa
-            markersGroup.clearLayers();
-            filtrados.forEach(f => {
-                if(coordenadas[f.cidade]) {
-                    L.circleMarker(coordenadas[f.cidade], {
-                        radius: 10, fillColor: '#D5001C', color: '#D4AF37', weight: 1.5, fillOpacity: 0.7
-                    }).addTo(markersGroup).bindPopup(`<b>${f.cidade}</b><br>${f.modelo}<br>$${f.preco.toLocaleString()}`);
-                }
-            });
-
-            atualizarGraficos(filtrados);
-        }
-
-        function atualizarGraficos(dados) {
-            const modCtx = document.getElementById('chartModelos').getContext('2d');
-            const cidCtx = document.getElementById('chartCidades').getContext('2d');
-
-            // Agrupar dados
-            const contagemModelos = {}; dados.forEach(d => contagemModelos[d.modelo] = (contagemModelos[d.modelo] || 0) + 1);
-            const somaCidades = {}; dados.forEach(d => somaCidades[d.cidade] = (somaCidades[d.cidade] || 0) + d.preco);
-
-            if(graficoMod) graficoMod.destroy();
-            if(graficoCid) graficoCid.destroy();
-
-            // Degradê vermelho para os gráficos
-            const grad = modCtx.createLinearGradient(0, 0, 0, 200);
-            grad.addColorStop(0, '#D5001C');
-            grad.addColorStop(1, 'rgba(21,22,25,0.1)');
-
-            graficoMod = new Chart(modCtx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(contagemModelos),
-                    datasets: [{ label: 'Unidades', data: Object.values(contagemModelos), backgroundColor: grad, borderColor: '#D5001C', borderWidth: 1 }]
-                },
-                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
-            });
-
-            graficoCid = new Chart(cidCtx, {
-                type: 'line',
-                data: {
-                    labels: Object.keys(somaCidades),
-                    datasets: [{ label: 'Faturamento ($)', data: Object.values(somaCidades), borderColor: '#D4AF37', backgroundColor: 'rgba(212,175,55,0.1)', fill: true, tension: 0.3 }]
-                },
-                options: { plugins: { legend: { display: false } } }
-            });
-        }
-
-        window.onload = init;
-    </script>
-</body>
-</html>
+        <div class="footer-info" style="margin-top: 3rem;">
+            <h2>Estrutura Corporativa V2.5 Premium</h2>
+            <p>Este
