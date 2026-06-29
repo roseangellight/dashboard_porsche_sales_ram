@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Porsche Executive Analytics - Dashboard V3 Final</title>
+    <title>Porsche Executive Analytics - Master Dark Premium</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         :root {
             --porsche-red: #D5001C;
-            --porsche-dark-bg: #0A0B0D;
-            --porsche-panel-bg: #141619;
-            --porsche-silver: #E5E7EB;
+            --porsche-dark-bg: #08090A;
+            --porsche-panel-bg: #121417;
+            --porsche-panel-light: #1A1D22;
+            --porsche-silver: #F3F4F6;
             --porsche-muted: #9CA3AF;
             --porsche-gold: #D4AF37;
-            --porsche-border: rgba(255, 255, 255, 0.07);
-            --porsche-glow: rgba(213, 0, 28, 0.2);
+            --porsche-border: rgba(255, 255, 255, 0.08);
+            --porsche-glow: rgba(213, 0, 28, 0.25);
             --card-radius: 16px;
         }
 
@@ -33,60 +36,55 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        html {
-            scroll-behavior: smooth;
-            background-color: var(--porsche-dark-bg);
-        }
-
         body {
             background-color: var(--porsche-dark-bg);
             color: var(--porsche-silver);
             overflow-x: hidden;
         }
 
-        /* Top Header Premium */
+        /* Top Header Premium Moderno */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem 3rem;
-            background: rgba(10, 11, 13, 0.8);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            background: rgba(8, 9, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             position: sticky;
             top: 0;
-            z-index: 999;
+            z-index: 1000;
             border-bottom: 1px solid var(--porsche-border);
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
-        /* Brasão/Silhueta Estilizada em CSS Puro */
         .brand-crest {
-            width: 28px;
-            height: 36px;
+            width: 24px;
+            height: 32px;
             background: linear-gradient(135deg, var(--porsche-gold), #B38F1D);
-            border-radius: 4px 4px 50px 50px;
+            border-radius: 3px 3px 50px 50px;
             position: relative;
-            border: 2px solid #000;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            border: 1.5px solid #000;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
         }
+
         .brand-crest::after {
             content: '';
             position: absolute;
-            top: 6px; left: 5px; right: 5px; bottom: 8px;
+            top: 5px; left: 4px; right: 4px; bottom: 7px;
             background: var(--porsche-red);
-            border-radius: 2px 2px 25px 25px;
+            border-radius: 2px 2px 20px 20px;
         }
 
         .brand-title {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 800;
-            letter-spacing: 0.35em;
+            letter-spacing: 0.3em;
             text-transform: uppercase;
             color: #FFF;
         }
@@ -96,7 +94,7 @@
             font-weight: 300;
         }
 
-        /* Abas de Navegação Premium */
+        /* Menu de Páginas/Abas Operacionais */
         .tabs-nav {
             display: flex;
             gap: 0.5rem;
@@ -110,14 +108,14 @@
             background: transparent;
             border: none;
             color: var(--porsche-muted);
-            padding: 0.6rem 1.6rem;
+            padding: 0.7rem 1.8rem;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.12em;
             cursor: pointer;
             border-radius: 20px;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .tab-btn:hover {
@@ -127,69 +125,62 @@
         .tab-btn.active {
             background: var(--porsche-red);
             color: #FFF;
-            box-shadow: 0 4px 15px var(--porsche-glow);
+            box-shadow: 0 4px 18px var(--porsche-glow);
         }
 
-        /* Banner Hero Clássico de Luxo */
+        /* Banner Hero Superior */
         .hero-section {
-            padding: 5rem 3rem 3rem 3rem;
-            max-width: 1600px;
+            padding: 4rem 3rem 2rem 3rem;
+            max-width: 1650px;
             margin: 0 auto;
-            position: relative;
-        }
-
-        .hero-context {
-            max-width: 800px;
         }
 
         .hero-badge {
             display: inline-block;
-            padding: 0.4rem 1.2rem;
-            background: rgba(212, 175, 55, 0.08);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 0.5rem 1.2rem;
+            background: rgba(212, 175, 55, 0.07);
+            border: 1px solid rgba(212, 175, 55, 0.25);
             color: var(--porsche-gold);
             font-size: 0.65rem;
             font-weight: 700;
-            letter-spacing: 0.25em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             border-radius: 4px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         .hero-section h1 {
-            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-size: 2.8rem;
             font-weight: 800;
             letter-spacing: -0.02em;
             color: #FFF;
-            line-height: 1.1;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .hero-section p {
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: var(--porsche-muted);
             font-weight: 300;
-            line-height: 1.7;
         }
 
-        /* Área de Conteúdo Principal */
+        /* Layout Container Principal */
         .main-container {
-            max-width: 1600px;
+            max-width: 1650px;
             margin: 0 auto;
             padding: 0 3rem 5rem 3rem;
         }
 
-        /* Seção Filtros Avançados */
+        /* Filtros Corporativos Planos */
         .filters-panel {
-            background: linear-gradient(145deg, #181A1E, #111315);
+            background: linear-gradient(145deg, #15171A, #0D0E10);
             border: 1px solid var(--porsche-border);
             border-radius: var(--card-radius);
             padding: 1.8rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
-            box-shadow: 0 25px 55px rgba(0,0,0,0.45);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .filter-cell {
@@ -202,49 +193,48 @@
             font-size: 0.68rem;
             color: var(--porsche-gold);
             text-transform: uppercase;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.18em;
             font-weight: 700;
         }
 
         .filter-cell select {
-            background: #0E0F11;
+            background: #0A0B0C;
             color: #FFF;
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 0.9rem 1.2rem;
+            padding: 0.85rem 1.2rem;
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 600;
             outline: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
         .filter-cell select:focus {
             border-color: var(--porsche-gold);
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
         }
 
-        /* KPIs de Performance */
+        /* Matriz Global de KPIs */
         .kpi-matrix {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
 
         .kpi-block {
-            background: linear-gradient(145deg, #16181B, #0F1012);
+            background: linear-gradient(145deg, #141619, #0B0C0E);
             border: 1px solid var(--porsche-border);
             border-radius: var(--card-radius);
-            padding: 2.2rem 2rem;
+            padding: 2rem;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
         }
 
         .kpi-block:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
         }
 
         .kpi-block::before {
@@ -258,43 +248,42 @@
         .kpi-block.accent-gold::before { background: var(--porsche-gold); }
 
         .kpi-block h3 {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--porsche-muted);
             text-transform: uppercase;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.15em;
             font-weight: 700;
             margin-bottom: 0.8rem;
         }
 
         .kpi-block .value {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             font-weight: 800;
             color: #FFF;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.02em;
             line-height: 1;
         }
 
         .kpi-block .trend {
             margin-top: 0.6rem;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--porsche-muted);
-            font-weight: 400;
         }
 
-        /* Painéis de Abas Dinâmicas */
+        /* Estrutura de Abas e Páginas */
         .tab-panel {
             display: none;
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeIn 0.4s ease forwards;
         }
 
         .tab-panel.active {
             display: block;
         }
 
-        /* Configuração de Gráficos e Insights */
+        /* Layout Combinado de Gráficos */
         .dashboard-grid-2x1 {
             display: grid;
-            grid-template-columns: 1.5fr 1fr;
+            grid-template-columns: 1.6fr 1fr;
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
@@ -304,7 +293,7 @@
             border: 1px solid var(--porsche-border);
             border-radius: var(--card-radius);
             padding: 2rem;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
         }
 
         .board-title-wrapper {
@@ -314,44 +303,14 @@
         }
 
         .board-title-wrapper h2 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: #FFF;
         }
 
-        .pill-showcase {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .luxury-pill {
-            background: #0B0C0E;
-            border: 1px solid var(--porsche-border);
-            border-radius: 10px;
-            padding: 1.2rem 1rem;
-            text-align: center;
-        }
-
-        .luxury-pill span {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--porsche-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: 0.4rem;
-            font-weight: 700;
-        }
-
-        .luxury-pill strong {
-            font-size: 1rem;
-            color: var(--porsche-gold);
-            font-weight: 700;
-        }
-
+        /* Lista de Métricas e Performance */
         .insight-card-list {
             display: flex;
             flex-direction: column;
@@ -360,80 +319,66 @@
         }
 
         .insight-item {
-            padding: 1rem 1.2rem;
+            padding: 1.1rem 1.3rem;
             background: #0B0C0E;
             border-left: 4px solid var(--porsche-gold);
             border-radius: 0 10px 10px 0;
             font-size: 0.85rem;
             color: var(--porsche-silver);
-            font-weight: 400;
             line-height: 1.5;
         }
 
-        /* Customização do Mapa e Leaflet Interativo */
+        /* Seção do Mapa */
         .map-wrapper {
             background: var(--porsche-panel-bg);
             border: 1px solid var(--porsche-border);
             border-radius: var(--card-radius);
             padding: 2rem;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.35);
             margin-bottom: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
         }
 
         #us-luxury-map {
-            height: 500px;
+            height: 520px;
             width: 100%;
-            border-radius: 10px;
-            background: #090A0B;
+            border-radius: 12px;
+            background: #070809;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Vitrine de Modelos Líderes */
-        .showcase-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .showcase-header h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #FFF;
-        }
-
+        /* Vitrine de Modelos Ativos */
         .car-matrix-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 3rem;
+            margin-top: 1.5rem;
         }
 
         .car-luxury-card {
-            background: linear-gradient(135deg, #181A1D, #121316);
+            background: linear-gradient(135deg, #16181B, #0E0F12);
             border-radius: var(--card-radius);
             border: 1px solid var(--porsche-border);
             padding: 2rem;
-            transition: all 0.3s ease;
             position: relative;
+            transition: all 0.3s ease;
         }
 
         .car-luxury-card:hover {
             border-color: var(--porsche-gold);
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transform: translateY(-3px);
         }
 
         .card-tag {
             position: absolute;
             top: 1.5rem; right: 1.5rem;
             padding: 0.3rem 0.8rem;
-            background: rgba(213,0,28,0.1);
+            background: rgba(213,0,28,0.12);
             border: 1px solid rgba(213,0,28,0.3);
             color: #FFA3A3;
             font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.1em;
             border-radius: 4px;
         }
 
@@ -442,222 +387,4 @@
             color: var(--porsche-gold);
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-
-        .card-car-title {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #FFF;
-            margin-bottom: 1.2rem;
-            letter-spacing: -0.01em;
-        }
-
-        .card-data-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding-top: 1rem;
-        }
-
-        .card-data-footer span {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--porsche-silver);
-        }
-
-        /* Estilização Customizada do Balão do Mapa Leaflet */
-        .leaflet-popup-content-wrapper {
-            background: #141619 !important;
-            color: #FFF !important;
-            border-radius: 12px !important;
-            border: 1px solid var(--porsche-gold) !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6) !important;
-        }
-        .leaflet-popup-tip {
-            background: #141619 !important;
-            border: 1px solid var(--porsche-gold) !important;
-        }
-
-        /* Rodapé Institucional */
-        footer {
-            background: #0B0C0E;
-            border-top: 1px solid var(--porsche-border);
-            padding: 3rem;
-            text-align: center;
-        }
-
-        footer p {
-            font-size: 0.85rem;
-            color: var(--porsche-muted);
-            font-weight: 400;
-            letter-spacing: 0.05em;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 1200px) {
-            .dashboard-grid-2x1 { grid-template-columns: 1fr; }
-            header { padding: 1.5rem 2rem; flex-direction: column; gap: 1.2rem; }
-            .hero-section, .main-container { padding-left: 1.5rem; padding-right: 1.5rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="brand">
-            <div class="brand-crest"></div>
-            <div class="brand-title">Porsche <span>Executive AI v3</span></div>
-        </div>
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchExecutiveTab('tab-overview')">Geral & Modelos</button>
-            <button class="tab-btn" onclick="switchExecutiveTab('tab-trends')">Tendências Temporais</button>
-        </div>
-    </header>
-
-    <section class="hero-section">
-        <div class="hero-context">
-            <div class="hero-badge">Relatório Consolidado de Transações</div>
-            <h1>Visão Macroeconômica</h1>
-            <p>Monitore volumes consolidados de faturamento líquido em Dólar (USD), distribuição por praça estratégica e canais de pagamento transacionais integrados.</p>
-        </div>
-    </section>
-
-    <main class="main-container">
-        
-        <div class="filters-panel">
-            <div class="filter-cell">
-                <label>Linha de Modelo</label>
-                <select id="executive-filter-model"><option value="ALL">Todos os Modelos</option></select>
-            </div>
-            <div class="filter-cell">
-                <label>Ano de Fabricação</label>
-                <select id="executive-filter-year"><option value="ALL">Todos os Anos</option></select>
-            </div>
-            <div class="filter-cell">
-                <label>Praça Regional</label>
-                <select id="executive-filter-city"><option value="ALL">Todas as Cidades</option></select>
-            </div>
-            <div class="filter-cell">
-                <label>Canal Transacional</label>
-                <select id="executive-filter-pay"><option value="ALL">Todos os Métodos</option></select>
-            </div>
-        </div>
-
-        <div class="kpi-matrix">
-            <div class="kpi-block accent-red">
-                <h3>Frota Comercializada</h3>
-                <div class="value" id="executive-kpi-count">0</div>
-                <div class="trend">Unidades físicas verificadas</div>
-            </div>
-            <div class="kpi-block accent-gold">
-                <h3>Faturamento Consolidado</h3>
-                <div class="value" id="executive-kpi-revenue">$ 0</div>
-                <div class="trend">Volume monetário bruto em USD</div>
-            </div>
-            <div class="kpi-block">
-                <h3>Ticket Médio Corporativo</h3>
-                <div class="value" id="executive-kpi-avg">$ 0</div>
-                <div class="trend">Valor líquido médio por transação</div>
-            </div>
-        </div>
-
-        <div id="tab-overview" class="tab-panel active">
-            <div class="dashboard-grid-2x1">
-                <div class="executive-board">
-                    <div class="board-title-wrapper">
-                        <h2>Análise de Market Share por Modelo</h2>
-                    </div>
-                    <div style="height: 320px; position: relative;">
-                        <canvas id="executiveModelsChart"></canvas>
-                    </div>
-                </div>
-                <div class="executive-board" style="display: flex; flex-direction: column; justify-content: space-between;">
-                    <div>
-                        <div class="board-title-wrapper">
-                            <h2>Sumário Operacional Direto</h2>
-                        </div>
-                        <ul class="insight-card-list" id="executive-insights-ul">
-                            </ul>
-                    </div>
-                    <div class="pill-showcase">
-                        <div class="luxury-pill">
-                            <span>Líder Absoluto</span>
-                            <strong id="summary-leader-model">-</strong>
-                        </div>
-                        <div class="luxury-pill">
-                            <span>Praça Ativa</span>
-                            <strong id="summary-leader-city">-</strong>
-                        </div>
-                        <div class="luxury-pill">
-                            <span>Método Principal</span>
-                            <strong id="summary-leader-pay">-</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-trends" class="tab-panel">
-            <div class="executive-board" style="margin-bottom: 2.5rem;">
-                <div class="board-title-wrapper">
-                    <h2>Evolução Volumétrica por Ano do Modelo</h2>
-                </div>
-                <div style="height: 350px; position: relative;">
-                    <canvas id="executiveYearsChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="map-wrapper">
-            <div class="board-title-wrapper" style="margin-bottom: 1.2rem;">
-                <h2>Distribuição Macroeconômica nos Estados Unidos</h2>
-            </div>
-            <div id="us-luxury-map"></div>
-        </div>
-
-        <div class="showcase-header">
-            <h2>Performance Líder Demográfica</h2>
-        </div>
-        <div class="car-matrix-grid" id="executive-car-grid">
-            </div>
-
-    </main>
-
-    <footer>
-        <p>© 2026 Porsche Executive Intelligence Report. Base analítica refinada de alta fidelidade.</p>
-    </footer>
-
-    <script>
-        // Banco de dados analítico estruturado sem perdas e rigorosamente fiel
-        const dataset = [
-            {"PorscheModelSanitized": "718 Cayman", "ModelYearSanitized": 2022, "SalesPriceSanitized": 79500, "PayMethodSanitized": "Credit Card", "CitySanitized": "Boston"},
-            {"PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 235000, "PayMethodSanitized": "Wire Transfer", "CitySanitized": "Seattle"},
-            {"PorscheModelSanitized": "Cayenne Coupe", "ModelYearSanitized": 2023, "SalesPriceSanitized": 112750, "PayMethodSanitized": "Financing", "CitySanitized": "Austin"},
-            {"PorscheModelSanitized": "Macan S", "ModelYearSanitized": 2021, "SalesPriceSanitized": 68900, "PayMethodSanitized": "Cash", "CitySanitized": "Denver"},
-            {"PorscheModelSanitized": "Taycan 4S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 121000, "PayMethodSanitized": "Bank Transfer", "CitySanitized": "Los Angeles"},
-            {"PorscheModelSanitized": "Panamera 4", "ModelYearSanitized": 2023, "SalesPriceSanitized": 104500, "PayMethodSanitized": "Credit Card", "CitySanitized": "Miami"},
-            {"PorscheModelSanitized": "911 Carrera S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 96300, "PayMethodSanitized": "Wire Transfer", "CitySanitized": "New York"},
-            {"PorscheModelSanitized": "718 Boxster", "ModelYearSanitized": 2021, "SalesPriceSanitized": 72000, "PayMethodSanitized": "Financing", "CitySanitized": "Chicago"},
-            {"PorscheModelSanitized": "Macan GTS", "ModelYearSanitized": 2023, "SalesPriceSanitized": 95000, "PayMethodSanitized": "Cash", "CitySanitized": "Phoenix"},
-            {"PorscheModelSanitized": "911 Carrera GTS", "ModelYearSanitized": 2024, "SalesPriceSanitized": 121750, "PayMethodSanitized": "Bank Transfer", "CitySanitized": "Chandler"},
-            {"PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 91300, "PayMethodSanitized": "Credit Card", "CitySanitized": "Nashville"},
-            {"PorscheModelSanitized": "911 Targa 4S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 158750, "PayMethodSanitized": "Wire Transfer", "CitySanitized": "Minneapolis"},
-            {"PorscheModelSanitized": "Panamera", "ModelYearSanitized": 2021, "SalesPriceSanitized": 72000, "PayMethodSanitized": "Financing", "CitySanitized": "Philadelphia"},
-            {"PorscheModelSanitized": "718 Cayman GT4 RS", "ModelYearSanitized": 2024, "SalesPriceSanitized": 176400, "PayMethodSanitized": "Credit Card", "CitySanitized": "Plano"},
-            {"PorscheModelSanitized": "718 Cayman GT4 RS", "ModelYearSanitized": 2024, "SalesPriceSanitized": 173600, "PayMethodSanitized": "Wire Transfer", "CitySanitized": "Columbus"},
-            {"PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 249300, "PayMethodSanitized": "Wire Transfer", "CitySanitized": "Boston"},
-            {"PorscheModelSanitized": "Panamera Turbo S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 134000, "PayMethodSanitized": "Credit Card", "CitySanitized": "Buffalo"},
-            {"PorscheModelSanitized": "911 GT3", "ModelYearSanitized": 2024, "SalesPriceSanitized": 224000, "PayMethodSanitized": "Financing", "CitySanitized": "Boise"},
-            {"PorscheModelSanitized": "911 GT3 RS", "ModelYearSanitized": 2024, "SalesPriceSanitized": 286500, "PayMethodSanitized": "Wire Transfer", "CitySanitized": "Arlington"},
-            {"PorscheModelSanitized": "Taycan Turbo", "ModelYearSanitized": 2023, "SalesPriceSanitized": 158500, "PayMethodSanitized": "Financing", "CitySanitized": "Atlanta"},
-            {"PorscheModelSanitized": "911 Carrera Cabriolet", "ModelYearSanitized": 2023, "SalesPriceSanitized": 127800, "PayMethodSanitized": "Credit Card", "CitySanitized": "Atlanta"},
-            {"PorscheModelSanitized": "Taycan GTS", "ModelYearSanitized": 2022, "SalesPriceSanitized": 148500, "PayMethodSanitized": "Leasing", "CitySanitized": "Atlanta"},
-            {"PorscheModelSanitized": "Cayenne E-Hybrid", "ModelYearSanitized": 2022, "SalesPriceSanitized": 96800, "PayMethodSanitized": "Financing", "CitySanitized": "Charlotte"},
-            {"PorscheModelSanitized": "9
+            font-weight: 7
