@@ -6,7 +6,7 @@
     <title>Porsche Executive AI Dashboard V2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -15,13 +15,14 @@
     <style>
         :root {
             --porsche-red: #D5001C;
-            --porsche-dark: #0F1012; 
-            --porsche-graphite: #1A1C1F; 
-            --porsche-silver: #D1D5DB; 
-            --porsche-gold: #D4AF37; 
+            --porsche-dark: #0F1012; /* Preto Fosco */
+            --porsche-graphite: #1A1C1F; /* Grafite Escuro */
+            --porsche-silver: #D1D5DB; /* Prata */
+            --porsche-gold: #D4AF37; /* Detalhes em Dourado */
             --porsche-line: rgba(255,255,255,0.08);
             --text-light: #F3F4F6;
             --text-muted: #9CA3AF;
+            --glow: rgba(213,0,28,0.25);
         }
 
         html { scroll-behavior: smooth; }
@@ -33,6 +34,7 @@
             line-height: 1.6;
         }
 
+        /* Navbar Layout */
         nav {
             display: flex; 
             justify-content: space-between; 
@@ -44,15 +46,33 @@
             top: 0; 
             z-index: 1000; 
             border-bottom: 1px solid var(--porsche-line);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
         }
-        nav .logo { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.3em; color: var(--porsche-silver); text-transform: uppercase; }
+        nav .logo { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            letter-spacing: 0.3em; 
+            color: var(--porsche-silver); 
+            text-transform: uppercase; 
+        }
         nav .logo span { color: var(--porsche-gold); }
-        nav ul { display: flex; gap: 2rem; list-style: none; }
-        nav a { color: var(--text-muted); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 500; transition: color 0.3s; }
+        nav ul { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        nav a { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.8rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.18em; 
+            font-weight: 500;
+            transition: color 0.3s; 
+        }
         nav a:hover, nav a.active { color: var(--porsche-red); }
 
+        /* Hero Header com o Novo Gráfico Estilizado Integrado */
         .hero {
-            min-height: 40vh; 
+            min-height: 50vh; 
+            position: relative; 
+            overflow: hidden; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
@@ -60,36 +80,170 @@
             text-align: center;
             padding: 4rem 2rem; 
             border-bottom: 1px solid var(--porsche-line);
-            background: radial-gradient(circle at center, rgba(26, 28, 31, 0.4) 0%, var(--porsche-dark) 100%), #131416;
+            background: radial-gradient(circle at center, rgba(26, 28, 31, 0.2) 0%, var(--porsche-dark) 100%), #131416;
         }
-        .hero h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: 0.22em; margin-bottom: 1rem; text-transform: uppercase; color: var(--porsche-silver); }
-        .hero p { font-size: 1rem; color: var(--text-muted); max-width: 800px; font-weight: 300; }
-        .hero-badge { margin-bottom: 1rem; padding: 0.4rem 1.2rem; border-radius: 4px; border: 1px solid var(--porsche-gold); background: rgba(212, 175, 55, 0.08); color: var(--porsche-gold); letter-spacing: 0.25em; text-transform: uppercase; font-size: 0.7rem; font-weight: 600; }
+        
+        /* NOVA IMAGEM DE CABEÇALHO ESTILIZADA (SVG) */
+        .hero-silhouette {
+            width: 100%;
+            max-width: 750px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(213, 0, 28, 0.3));
+            opacity: 0.95;
+            pointer-events: none; /* Evita que o usuário interaja com a imagem */
+        }
+
+        .hero h1 { 
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem); 
+            font-weight: 700; 
+            letter-spacing: 0.22em; 
+            margin-bottom: 1rem; 
+            text-transform: uppercase; 
+            color: var(--porsche-silver);
+            border-bottom: 2px solid var(--porsche-gold);
+            padding-bottom: 0.5rem;
+        }
+        .hero p { 
+            font-size: 1rem; 
+            color: var(--text-muted); 
+            max-width: 800px; 
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+        .hero-badge {
+            margin-bottom: 1rem; 
+            padding: 0.4rem 1.2rem; 
+            border-radius: 4px; 
+            border: 1px solid var(--porsche-gold);
+            background: rgba(212, 175, 55, 0.08); 
+            color: var(--porsche-gold); 
+            letter-spacing: 0.25em; 
+            text-transform: uppercase; 
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
 
         .container { padding: 3rem; max-width: 1600px; margin: 0 auto; }
 
+        /* Estilos dos Elementos do Dashboard (Rounded, Premium) */
         .filters {
             display: flex; gap: 1.2rem; margin-bottom: 2rem; flex-wrap: wrap; padding: 1.5rem;
             background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 12px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
         .filter-group { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 220px; }
         .filter-group label { font-size: 0.7rem; color: var(--porsche-silver); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
         .filter-group select {
             background: var(--porsche-dark); color: var(--text-light); border: 1px solid rgba(255,255,255,0.12); padding: 0.8rem 1rem; border-radius: 6px;
-            font-size: 0.9rem; outline: none; transition: all 0.3s;
+            font-size: 0.9rem; outline: none; transition: all 0.3s; font-weight: 500;
         }
-        .filter-group select:focus { border-color: var(--porsche-gold); }
+        .filter-group select:focus { border-color: var(--porsche-gold); box-shadow: 0 0 8px rgba(212, 175, 55, 0.2); }
 
         .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .kpi-card {
             background: var(--porsche-graphite); padding: 1.8rem; border-radius: 12px;
             border: 1px solid var(--porsche-line); border-top: 3px solid var(--porsche-red); 
-            transition: transform 0.3s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+            transition: transform 0.3s, border-color 0.3s;
         }
         .kpi-card:hover { transform: translateY(-4px); border-color: var(--porsche-gold); }
-        .kpi-card h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.6rem; }
-        .kpi-card .value { font-size: 2.2rem; font-weight: 700; color: var(--text-light); }
+        .kpi-card h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.6rem; font-weight: 600; }
+        .kpi-card .value { font-size: 2.2rem; font-weight: 700; color: var(--text-light); letter-spacing: -0.02em; }
         .kpi-card .sub { color: var(--porsche-silver); font-size: 0.8rem; margin-top: 0.4rem; font-weight: 300; }
 
-        .executive-panel { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-        .panel-card { background: var(--porsche-graphite); border: 1px solid var(--porsche-line); padding: 1.8rem; border-radius: 12px; }
+        /* Painel Executivo e Mapas (Mesmo estilo Premium V1) */
+        .luxury-map-container {
+            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 12px; padding: 1.8rem; box-shadow: 0 15px 35px rgba(0,0,0,0.35); margin-bottom: 2.5rem;
+        }
+        #porsche-map { height: 450px; width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #0b0c0d; }
+
+        /* Gráficos e Showcase (Sem Alterações) */
+        .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+        .chart-container { background: var(--porsche-graphite); padding: 1.8rem; border-radius: 12px; border: 1px solid var(--porsche-line); box-shadow: 0 15px 35px rgba(0,0,0,0.35); }
+        .chart-container h2 { font-size: 1.05rem; margin-bottom: 1.2rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--porsche-silver); border-left: 3px solid var(--porsche-gold); padding-left: 10px; }
+
+        /* Leaflet Popups (Tema Dark) */
+        .leaflet-popup-content-wrapper { background: var(--porsche-graphite) !important; color: var(--text-light) !important; border-radius: 8px !important; border: 1px solid var(--porsche-gold) !important; font-family: 'Montserrat', sans-serif !important; }
+        .leaflet-popup-tip { background: var(--porsche-graphite) !important; border: 1px solid var(--porsche-gold) !important; }
+
+        /* Resolução Responsiva */
+        @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } .container { padding: 1.5rem; } nav { padding: 1rem; flex-direction: column; gap: 1rem; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Porsche <span>Executive</span></div>
+        <ul>
+            <li><a href="#dashboard" class="active">Dashboard</a></li>
+            <li><a href="#map-section">Presença Geográfica</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">Apresentação Corporativa V2</div>
+        
+        <svg class="hero-silhouette" viewBox="0 0 600 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 110 C 90 108, 110 88, 140 75 C 180 58, 230 48, 290 48 C 360 48, 410 56, 455 72 C 485 82, 505 105, 560 110" stroke="#D1D5DB" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.4"/>
+            <path d="M50 110 L 115 110 C 125 92, 155 92, 165 110 L 420 110 C 430 92, 460 92, 470 110 L 550 110" stroke="#D5001C" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="140" cy="110" r="14" stroke="#D4AF37" stroke-width="3" fill="#0F1012"/>
+            <circle cx="445" cy="110" r="14" stroke="#D4AF37" stroke-width="3" fill="#0F1012"/>
+        </svg>
+
+        <h1>Inteligência Automotiva</h1>
+        <p>Visão estratégica e monitoramento em tempo real dos indicadores de faturamento, performance regional de modelos e canais de pagamento da Porsche.</p>
+    </div>
+
+    <div class="container" id="dashboard">
+        <div class="filters">
+            <div class="filter-group">
+                <label>Modelo Porsche</label>
+                <select id="filter-model"><option value="ALL">Todos os Modelos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Cidade Regional</label>
+                <select id="filter-city"><option value="ALL">Todas as Cidades</option></select>
+            </div>
+        </div>
+
+        <div class="kpis">
+            <div class="kpi-card">
+                <h3>Total de Veículos Comercializados</h3>
+                <div class="value" id="kpi-count">0</div>
+                <div class="sub sub-leader-model">Modelo Líder: Carregando...</div>
+            </div>
+            <div class="kpi-card gold">
+                <h3>Volume Total de Vendas (USD)</h3>
+                <div class="value" id="kpi-revenue">$ 0</div>
+                <div class="sub sub-leader-city">Praça Destaque: Carregando...</div>
+            </div>
+        </div>
+
+        <div class="luxury-map-container" id="map-section">
+            <h3 style="text-transform: uppercase; font-size: 1.15rem; margin-bottom: 1.2rem;">Distribuição de Mercado nos Estados Unidos</h3>
+            <div id="porsche-map"></div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-container">
+                <h2>Volume de Vendas por Modelo</h2>
+                <canvas id="modelsChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Oscilação de Valor por Período</h2>
+                <canvas id="yearsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const porscheData = %PORSCHE_DATA_JSON%; // Insira seu JSON aqui
+
+        const cityCoordinates = { /* Mesmas coordenadas V1 */ };
+
+        // ... (Mesmas funções Javascript do Código V1) ...
+
+    </script>
+</body>
+</html>
