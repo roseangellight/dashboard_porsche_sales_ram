@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Porsche Corporate Intelligence Dashboard</title>
+    <title>Porsche Systems Corporate Intelligence</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,9 +23,10 @@
             --porsche-silver: #E5E7EB;
             --porsche-muted: #8E96A0;
             --porsche-gold: #C5A059;
-            --porsche-border: rgba(255, 255, 255, 0.07);
-            --porsche-glow: rgba(213, 0, 28, 0.2);
-            --premium-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            --porsche-border: rgba(255, 255, 255, 0.08);
+            --porsche-glow: rgba(213, 0, 28, 0.25);
+            /* Sombreamento profundo e degradê interno realistas */
+            --premium-shadow: 0 25px 55px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.06);
             --card-radius: 14px;
         }
 
@@ -43,7 +44,7 @@
             overflow-x: hidden;
         }
 
-        /* Header Executivo com Efeito Vidro e Sombra Projetada */
+        /* Header com Efeito Vidro Reflexivo */
         header {
             display: flex;
             justify-content: space-between;
@@ -56,7 +57,7 @@
             top: 0;
             z-index: 1000;
             border-bottom: 1px solid var(--porsche-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
 
         .brand {
@@ -95,11 +96,11 @@
             font-weight: 300;
         }
 
-        /* Seletor de Abas Estilo Cockpit */
+        /* Abas Estilo Cockpit */
         .tabs-nav {
             display: flex;
             gap: 0.4rem;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             padding: 5px;
             border-radius: 30px;
             border: 1px solid var(--porsche-border);
@@ -135,7 +136,7 @@
             padding: 2.5rem 3rem 5rem 3rem;
         }
 
-        /* Painel de Controle de Filtros Avançados */
+        /* Painel de Filtros Sombreado */
         .filters-panel {
             background: linear-gradient(145deg, #121418, #0B0C0E);
             border: 1px solid var(--porsche-border);
@@ -172,15 +173,9 @@
             font-weight: 600;
             outline: none;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .filter-cell select:focus {
-            border-color: var(--porsche-gold);
-            box-shadow: 0 0 10px rgba(197, 160, 89, 0.15);
-        }
-
-        /* Grid Dinâmica de Painéis de KPIs */
+        /* KPIs Dinâmicos com Sombras e Bordas Ativas */
         .kpi-matrix {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -196,11 +191,6 @@
             position: relative;
             overflow: hidden;
             box-shadow: var(--premium-shadow);
-            transition: transform 0.3s ease;
-        }
-
-        .kpi-block:hover {
-            transform: translateY(-3px);
         }
 
         .kpi-block::before {
@@ -229,17 +219,16 @@
             letter-spacing: -0.02em;
         }
 
-        /* Container das Abas Planas */
+        /* Gerenciador Visual das Abas */
         .tab-panel {
             display: none;
         }
 
         .tab-panel.active {
             display: block;
-            animation: panelFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            animation: panelFadeIn 0.4s ease forwards;
         }
 
-        /* Gráficos em Blocos Sombreados Elegantes */
         .dashboard-grid-layout {
             display: grid;
             grid-template-columns: 1.5fr 1fr;
@@ -269,7 +258,7 @@
             color: #FFF;
         }
 
-        /* Listagem de Insights com Layout Clean */
+        /* Lista Clean de Insights */
         .insight-card-list {
             display: flex;
             flex-direction: column;
@@ -285,10 +274,9 @@
             font-size: 0.8rem;
             color: var(--porsche-silver);
             line-height: 1.5;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
         }
 
-        /* Mapa Corporativo */
+        /* Wrapper do Mapa */
         .map-wrapper {
             background: linear-gradient(145deg, #0F1114, #0A0B0D);
             border: 1px solid var(--porsche-border);
@@ -306,7 +294,7 @@
             border: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* Tabela Corporativa de Alta Resolução */
+        /* Tabela Corporativa */
         .table-scroller {
             overflow-x: auto;
             margin-top: 1rem;
@@ -363,7 +351,7 @@
         </div>
         <div class="tabs-nav">
             <button id="btn-tab1" class="tab-btn active" onclick="switchTab('overview')">Market Share & Volumetria</button>
-            <button id="btn-tab2" class="tab-btn" onclick="switchTab('profitability')">Lucratividade & Margens</button>
+            <button id="btn-tab2" class="tab-btn" onclick="switchTab('profitability')">Análise de Faturamento</button>
         </div>
     </header>
 
@@ -430,15 +418,15 @@
                     <div class="value" id="tab2-kpi-avg">$ 0</div>
                 </div>
                 <div class="kpi-block">
-                    <h3>Margem Estimada Gross</h3>
-                    <div class="value" id="tab2-kpi-margin" style="color: #22C55E;">100%</div>
+                    <h3>Praças Ativas</h3>
+                    <div class="value" id="tab2-kpi-active-cities">0</div>
                 </div>
             </div>
 
             <div class="dashboard-grid-layout">
                 <div class="executive-board">
                     <div class="board-title-wrapper">
-                        <h2>Faturamento por Praça Comercial</h2>
+                        <h2>Faturamento Bruto por Cidade</h2>
                     </div>
                     <div style="height: 320px; position: relative;">
                         <canvas id="chartCitiesRevenue"></canvas>
@@ -446,15 +434,15 @@
                 </div>
                 <div class="executive-board">
                     <div class="board-title-wrapper">
-                        <h2>Rank de Contribuição</h2>
+                        <h2>Rank de Receitas por Região</h2>
                     </div>
                     <div class="table-scroller">
                         <table class="corporate-table">
                             <thead>
                                 <tr>
                                     <th>Cidade</th>
-                                    <th>Qtd</th>
-                                    <th>Total Geral</th>
+                                    <th>Qtd Vendas</th>
+                                    <th>Total Bruto</th>
                                 </tr>
                             </thead>
                             <tbody id="revenue-table-body">
@@ -467,7 +455,7 @@
 
         <div class="map-wrapper">
             <div class="board-title-wrapper" style="margin-bottom: 1.2rem;">
-                <h2>Geolocalização das Transações Realizadas (100 Carros)</h2>
+                <h2>Geolocalização das Transações Realizadas (Base Exata de 100 Carros)</h2>
             </div>
             <div id="us-luxury-map"></div>
         </div>
@@ -475,11 +463,11 @@
     </main>
 
     <footer>
-        <p>© 2026 Porsche Systems Corporate Enterprise. Informações Confidenciais.</p>
+        <p>© 2026 Porsche Systems Corporate Enterprise. Informações Confidenciais do Painel V2.</p>
     </footer>
 
     <script>
-        // BANCO DE DADOS INTEGRAL DE 100 VEÍCULOS CONFORME PLANILHA ORIGINAL
+        // BANCO DE DADOS INTEGRAL DE 100 VEÍCULOS CONFORME PLANILHA ORIGINAL DO CLIENTE
         const salesDataset = [
             {"Model": "911 Turbo S", "Year": 2024, "Price": 235000, "City": "Seattle"},
             {"Model": "911 Turbo S", "Year": 2023, "Price": 249300, "City": "Boston"},
@@ -520,4 +508,281 @@
             {"Model": "Macan Electric", "Year": 2024, "Price": 89700, "City": "New Orleans"},
             {"Model": "Taycan 4S", "Year": 2024, "Price": 121000, "City": "Los Angeles"},
             {"Model": "Taycan Turbo", "Year": 2023, "Price": 158500, "City": "Atlanta"},
-            {"Model": "Taycan GTS", "Year": 2
+            {"Model": "Taycan GTS", "Year": 2022, "Price": 148500, "City": "Atlanta"},
+            {"Model": "Taycan GTS", "Year": 2022, "Price": 142000, "City": "Anaheim"},
+            {"Model": "Taycan", "Year": 2021, "Price": 116900, "City": "Milwaukee"},
+            {"Model": "Panamera 4", "Year": 2023, "Price": 104500, "City": "Miami"},
+            {"Model": "Panamera", "Year": 2021, "Price": 72000, "City": "Philadelphia"},
+            {"Model": "Panamera Turbo S", "Year": 2023, "Price": 134000, "City": "Buffalo"},
+            {"Model": "Panamera GTS", "Year": 2023, "Price": 135000, "City": "Atlanta"},
+            {"Model": "911 Turbo S", "Year": 2024, "Price": 235000, "City": "Los Angeles"},
+            {"Model": "Taycan 4S", "Year": 2023, "Price": 115000, "City": "New York"},
+            {"Model": "Macan S", "Year": 2022, "Price": 71000, "City": "Miami"},
+            {"Model": "Cayenne Coupe", "Year": 2024, "Price": 118000, "City": "Austin"},
+            {"Model": "911 GT3 RS", "Year": 2024, "Price": 286500, "City": "Miami"},
+            {"Model": "718 Cayman", "Year": 2023, "Price": 82000, "City": "Seattle"},
+            {"Model": "Panamera 4", "Year": 2022, "Price": 99000, "City": "Chicago"},
+            {"Model": "Macan GTS", "Year": 2024, "Price": 98000, "City": "Denver"},
+            {"Model": "911 Carrera S", "Year": 2023, "Price": 125000, "City": "Boston"},
+            {"Model": "Taycan Turbo", "Year": 2024, "Price": 162000, "City": "San Jose"},
+            {"Model": "911 Targa 4S", "Year": 2024, "Price": 159000, "City": "Orlando"},
+            {"Model": "Cayenne S", "Year": 2023, "Price": 94000, "City": "Houston"},
+            {"Model": "718 Boxster", "Year": 2022, "Price": 75000, "City": "Phoenix"},
+            {"Model": "911 Turbo S", "Year": 2023, "Price": 245000, "City": "New York"},
+            {"Model": "Macan", "Year": 2022, "Price": 61000, "City": "Austin"},
+            {"Model": "Cayenne E-Hybrid", "Year": 2024, "Price": 102000, "City": "Los Angeles"},
+            {"Model": "911 Carrera", "Year": 2023, "Price": 129000, "City": "Chicago"},
+            {"Model": "Taycan GTS", "Year": 2023, "Price": 145000, "City": "Atlanta"},
+            {"Model": "718 Cayman GT4 RS", "Year": 2024, "Price": 178000, "City": "Las Vegas"},
+            {"Model": "Panamera Turbo S", "Year": 2024, "Price": 139000, "City": "Dallas"},
+            {"Model": "911 GT3", "Year": 2023, "Price": 221000, "City": "Houston"},
+            {"Model": "Macan T", "Year": 2024, "Price": 76000, "City": "Seattle"},
+            {"Model": "Cayenne Coupe", "Year": 2022, "Price": 109000, "City": "Boston"},
+            {"Model": "911 Dakar", "Year": 2024, "Price": 530000, "City": "Los Angeles"},
+            {"Model": "Taycan 4S", "Year": 2022, "Price": 112000, "City": "Chicago"},
+            {"Model": "911 Targa 4", "Year": 2023, "Price": 279000, "City": "Miami"},
+            {"Model": "Macan S", "Year": 2023, "Price": 73000, "City": "New York"},
+            {"Model": "718 Boxster GTS", "Year": 2023, "Price": 96000, "City": "Austin"},
+            {"Model": "Panamera 4", "Year": 2024, "Price": 108000, "City": "Orlando"},
+            {"Model": "911 Turbo S", "Year": 2024, "Price": 240000, "City": "Atlanta"},
+            {"Model": "Cayenne S Coupe", "Year": 2024, "Price": 116000, "City": "San Jose"},
+            {"Model": "911 Carrera GTS", "Year": 2023, "Price": 119000, "City": "Denver"},
+            {"Model": "Macan Electric", "Year": 2024, "Price": 91000, "City": "Los Angeles"},
+            {"Model": "718 Cayman", "Year": 2021, "Price": 71000, "City": "Philadelphia"},
+            {"Model": "Taycan Turbo", "Year": 2023, "Price": 155000, "City": "Boston"},
+            {"Model": "911 GT3 RS", "Year": 2024, "Price": 289000, "City": "Las Vegas"},
+            {"Model": "Cayenne E-Hybrid", "Year": 2023, "Price": 97000, "City": "Seattle"},
+            {"Model": "911 Targa 4S", "Year": 2022, "Price": 151000, "City": "Phoenix"},
+            {"Model": "Macan GTS", "Year": 2022, "Price": 92000, "City": "Houston"},
+            {"Model": "Panamera GTS", "Year": 2024, "Price": 138000, "City": "New York"},
+            {"Model": "718 Boxster", "Year": 2023, "Price": 77000, "City": "Miami"},
+            {"Model": "911 Carrera S", "Year": 2024, "Price": 129000, "City": "Atlanta"},
+            {"Model": "Taycan GTS", "Year": 2024, "Price": 149000, "City": "Chicago"},
+            {"Model": "Macan", "Year": 2023, "Price": 64000, "City": "Orlando"},
+            {"Model": "Cayenne Coupe", "Year": 2023, "Price": 114000, "City": "Denver"},
+            {"Model": "911 Turbo", "Year": 2024, "Price": 205000, "City": "San Jose"},
+            {"Model": "718 Cayman GT4 RS", "Year": 2023, "Price": 171000, "City": "Austin"},
+            {"Model": "Panamera 4", "Year": 2021, "Price": 89000, "City": "Boston"},
+            {"Model": "911 Turbo S", "Year": 2022, "Price": 228000, "City": "Houston"},
+            {"Model": "Macan S", "Year": 2024, "Price": 75000, "City": "Seattle"},
+            {"Model": "Cayenne S", "Year": 2024, "Price": 97000, "City": "Miami"},
+            {"Model": "Taycan 4S", "Year": 2024, "Price": 124000, "City": "Orlando"},
+            {"Model": "911 GT3", "Year": 2024, "Price": 229000, "City": "New York"},
+            {"Model": "718 Boxster GTS", "Year": 2024, "Price": 99000, "City": "Los Angeles"}
+        ];
+
+        // Mapeamento de Coordenadas
+        const geoCoordinates = {
+            "Seattle": [47.6062, -122.3321], "Boston": [42.3601, -71.0589], "Orlando": [28.5384, -81.3789],
+            "Arlington": [32.7357, -97.1081], "Boise": [43.6150, -116.2023], "New Orleans": [29.9511, -90.0715],
+            "Oakland": [37.8044, -122.2712], "Minneapolis": [44.9778, -93.2650], "Chesapeake": [36.7682, -76.2875],
+            "Las Vegas": [36.1716, -115.1398], "New York": [40.7128, -74.0060], "Chicago": [41.8781, -87.6298],
+            "Chandler": [33.3062, -111.8413], "Atlanta": [33.7490, -84.3880], "Anchorage": [61.2181, -149.9003],
+            "Albuquerque": [35.0844, -106.6511], "Plano": [33.0198, -96.6989], "Columbus": [39.9612, -82.9988],
+            "Omaha": [41.2565, -95.9345], "Houston": [29.7604, -95.3698], "Austin": [30.2672, -97.7431],
+            "Nashville": [36.1627, -86.7816], "Charlotte": [35.2271, -80.8431], "Madison": [43.0731, -89.4012],
+            "Bakersfield": [35.3733, -119.0187], "San Jose": [37.3382, -121.8863], "Denver": [39.7392, -104.9903],
+            "Phoenix": [33.4484, -112.0740], "Mesa": [33.4152, -111.8315], "Norfolk": [36.8508, -76.2859],
+            "Los Angeles": [34.0522, -118.2437], "Miami": [25.7617, -80.1918], "Milwaukee": [43.0389, -87.9065],
+            "Philadelphia": [39.9526, -75.1652], "Buffalo": [42.8864, -78.8784], "Anaheim": [33.8366, -117.9143],
+            "Dallas": [32.7767, -96.7970]
+        };
+
+        let mapObj = null, markersGroup = null, chartM = null, chartC = null;
+
+        function formatCurrency(v) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            if(tabName === 'overview') {
+                document.getElementById('tab-overview').classList.add('active');
+                document.getElementById('btn-tab1').classList.add('active');
+            } else {
+                document.getElementById('tab-profitability').classList.add('active');
+                document.getElementById('btn-tab2').classList.add('active');
+            }
+        }
+
+        function buildFilters() {
+            const models = new Set(), years = new Set(), cities = new Set();
+            salesDataset.forEach(r => { models.add(r.Model); years.add(r.Year); cities.add(r.City); });
+
+            const populate = (id, set) => {
+                const select = document.getElementById(id);
+                Array.from(set).sort().forEach(v => {
+                    const o = document.createElement('option'); o.value = v; o.textContent = v;
+                    select.appendChild(o);
+                });
+            };
+            populate('filter-model', models);
+            populate('filter-year', years);
+            populate('filter-city', cities);
+        }
+
+        function initMap() {
+            mapObj = L.map('us-luxury-map', { attributionControl: false, scrollWheelZoom: false }).setView([37.0902, -95.7129], 4);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 18 }).addTo(mapObj);
+            markersGroup = L.layerGroup().addTo(mapObj);
+        }
+
+        function dataPipeline() {
+            const fModel = document.getElementById('filter-model').value;
+            const fYear = document.getElementById('filter-year').value;
+            const fCity = document.getElementById('filter-city').value;
+
+            const filtered = salesDataset.filter(r => {
+                if(fModel !== "ALL" && r.Model !== fModel) return false;
+                if(fYear !== "ALL" && String(r.Year) !== fYear) return false;
+                if(fCity !== "ALL" && r.City !== fCity) return false;
+                return true;
+            });
+
+            let revenue = 0;
+            const count = filtered.length;
+            const modelMap = {}, cityMap = {};
+
+            filtered.forEach(r => {
+                revenue += r.Price;
+                modelMap[r.Model] = (modelMap[r.Model] || 0) + 1;
+                if(!cityMap[r.City]) cityMap[r.City] = { total: 0, count: 0 };
+                cityMap[r.City].total += r.Price;
+                cityMap[r.City].count += 1;
+            });
+
+            // Aba 1 - Volume KPIs
+            document.getElementById('tab1-kpi-count').textContent = count;
+            
+            let topModel = "-", maxM = 0;
+            for(let m in modelMap) { if(modelMap[m] > maxM) { maxM = modelMap[m]; topModel = m; } }
+            document.getElementById('tab1-kpi-topmodel').textContent = topModel;
+
+            let topCity = "-", maxC = 0;
+            for(let c in cityMap) { if(cityMap[c].count > maxC) { maxC = cityMap[c].count; topCity = c; } }
+            document.getElementById('tab1-kpi-topcity').textContent = topCity;
+
+            // Aba 2 - Financeiro KPIs
+            document.getElementById('tab2-kpi-revenue').textContent = formatCurrency(revenue);
+            const avg = count > 0 ? (revenue / count) : 0;
+            document.getElementById('tab2-kpi-avg').textContent = formatCurrency(avg);
+            document.getElementById('tab2-kpi-active-cities').textContent = Object.keys(cityMap).length;
+
+            renderOverviewChart(modelMap);
+            renderProfitabilityChart(cityMap);
+            renderTable(cityMap);
+            renderMapMarkers(cityMap);
+            updateInsights(count, topModel, topCity);
+        }
+
+        function updateInsights(count, topModel, topCity) {
+            const container = document.getElementById('tab1-insights');
+            container.innerHTML = `
+                <li class="insight-item">Total de <b>${count} veículos</b> ativamente monitorados no ecossistema comercial.</li>
+                <li class="insight-item">A linha de performance <b>${topModel}</b> retém a maior taxa de conversão nacional.</li>
+                <li class="insight-item">A zona corporativa de <b>${topCity}</b> lidera o market share em densidade de vendas de alta gama.</li>
+            `;
+        }
+
+        function renderOverviewChart(modelMap) {
+            const ctx = document.getElementById('chartModelsShare').getContext('2d');
+            if(chartM) chartM.destroy();
+
+            const labels = Object.keys(modelMap);
+            const data = Object.values(modelMap);
+            
+            // Degradê vertical premium vermelho para preto transparente
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(213, 0, 28, 0.95)');
+            gradient.addColorStop(1, 'rgba(15, 17, 20, 0.1)');
+
+            chartM = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: gradient, borderColor: '#D5001C', borderWidth: 2, borderRadius: 5 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#8E96A0', font: { family: 'Montserrat', size: 9 } }, grid: { display: false } },
+                        y: { ticks: { color: '#8E96A0' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+                    }
+                }
+            });
+        }
+
+        function renderProfitabilityChart(cityMap) {
+            const ctx = document.getElementById('chartCitiesRevenue').getContext('2d');
+            if(chartC) chartC.destroy();
+
+            const sortedCities = Object.keys(cityMap).sort((a,b) => cityMap[b].total - cityMap[a].total).slice(0, 7);
+            const data = sortedCities.map(c => cityMap[c].total);
+            
+            // Degradê horizontal dourado
+            const gradient = ctx.createLinearGradient(0, 0, 300, 0);
+            gradient.addColorStop(0, 'rgba(197, 160, 89, 0.95)');
+            gradient.addColorStop(1, 'rgba(15, 17, 20, 0.1)');
+
+            chartC = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedCities,
+                    datasets: [{ data: data, backgroundColor: gradient, borderColor: '#C5A059', borderWidth: 1.5, borderRadius: 4 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#8E96A0' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                        y: { ticks: { color: '#8E96A0', font: { family: 'Montserrat' } }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderTable(cityMap) {
+            const tbody = document.getElementById('revenue-table-body');
+            tbody.innerHTML = "";
+            
+            Object.keys(cityMap).sort((a,b) => cityMap[b].total - cityMap[a].total).slice(0, 6).forEach(city => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${city}</b></td>
+                    <td>${cityMap[city].count} u.</td>
+                    <td style="color:var(--porsche-gold); font-weight:700;">${formatCurrency(cityMap[city].total)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderMapMarkers(cityMap) {
+            markersGroup.clearLayers();
+            for(let city in cityMap) {
+                if(geoCoordinates[city]) {
+                    L.circleMarker(geoCoordinates[city], {
+                        radius: Math.min(16, Math.max(7, cityMap[city].count * 2.5)),
+                        fillColor: '#D5001C', color: '#C5A059', weight: 1.5, fillOpacity: 0.65
+                    }).addTo(markersGroup).bindPopup(`
+                        <div style="color:#FFF; font-family:'Montserrat';">
+                            <strong style="color:var(--porsche-gold);">${city.toUpperCase()}</strong><br/>
+                            Volume: ${cityMap[city].count} unidades<br/>
+                            Total Bruto: <strong>${formatCurrency(cityMap[city].total)}</strong>
+                        </div>
+                    `);
+                }
+            }
+        }
+
+        window.onload = function() {
+            buildFilters();
+            initMap();
+            dataPipeline();
+        };
+    </script>
+</body>
+</html>
