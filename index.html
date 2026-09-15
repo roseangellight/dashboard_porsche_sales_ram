@@ -386,9 +386,8 @@
 
         function initMap() {
     map = L.map('porsche-map', { attributionControl: false }).setView([37.8, -96], 4);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 18,
-        subdomains: 'abcd'
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18
     }).addTo(map);
     markerLayerGroup = L.layerGroup().addTo(map);
 }
