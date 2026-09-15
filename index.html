@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porsche Executive AI Dashboard V2</title>
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js and Leaflet CSS/JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --porsche-red: #D5001C;
+            --porsche-dark: #0F1012; /* Preto Fosco */
+            --porsche-graphite: #1A1C1F; /* Grafite Escuro */
+            --porsche-silver: #D1D5DB; /* Prata */
+            --porsche-gold: #D4AF37; /* Detalhes em Dourado */
+            --porsche-line: rgba(255,255,255,0.08);
+            --text-light: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --glow: rgba(213,0,28,0.25);
+        }
+
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        
+        body {
+            background-color: var(--porsche-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Navbar Layout */
+        nav {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 1.2rem 3rem; 
+            background: rgba(15, 16, 18, 0.85);
+            backdrop-filter: blur(20px); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--porsche-line);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        nav .logo { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            letter-spacing: 0.3em; 
+            color: var(--porsche-silver); 
+            text-transform: uppercase; 
+        }
+        nav .logo span { color: var(--porsche-gold); }
+        nav ul { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        nav a { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.8rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.18em; 
+            font-weight: 500;
+            transition: color 0.3s; 
+        }
+        nav a:hover, nav a.active { color: var(--porsche-red); }
+
+        /* Hero Header with Stylized SVG Silhouette */
+        .hero {
+            min-height: 50vh; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            padding: 4rem 2rem; 
+            border-bottom: 1px solid var(--porsche-line);
+            background: radial-gradient(circle at center, rgba(26, 28, 31, 0.2) 0%, var(--porsche-dark) 100%), #131416;
+        }
+        
+        .hero-silhouette {
+            width: 100%;
+            max-width: 750px;
+            height: auto;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px rgba(213, 0, 28, 0.3));
+            opacity: 0.95;
+        }
+
+        .hero h1 { 
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem); 
+            font-weight: 700; 
+            letter-spacing: 0.22em; 
+            margin-bottom: 1rem; 
+            text-transform: uppercase; 
+            color: var(--porsche-silver);
+            border-bottom: 2px solid var(--porsche-gold);
+            padding-bottom: 0.5rem;
+        }
+        .hero p { 
+            font-size: 1rem; 
+            color: var(--text-muted); 
+            max-width: 800px; 
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+        .hero-badge {
+            margin-bottom: 1rem; 
+            padding: 0.4rem 1.2rem; 
+            border-radius: 4px; 
+            border: 1px solid var(--porsche-gold);
+            background: rgba(212, 175, 55, 0.08); 
+            color: var(--porsche-gold); 
+            letter-spacing: 0.25em; 
+            text-transform: uppercase; 
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .container { padding: 3rem; max-width: 1600px; margin: 0 auto; }
+
+        /* Premium Rounded Grid Elements */
+        .filters {
+            display: flex; gap: 1.2rem; margin-bottom: 2rem; flex-wrap: wrap; padding: 1.5rem;
+            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 12px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 220px; }
+        .filter-group label { font-size: 0.7rem; color: var(--porsche-silver); text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; }
+        .filter-group select {
+            background: var(--porsche-dark); color: var(--text-light); border: 1px solid rgba(255,255,255,0.12); padding: 0.8rem 1rem; border-radius: 6px;
+            font-size: 0.9rem; outline: none; transition: all 0.3s; font-weight: 500;
+        }
+        .filter-group select:focus { border-color: var(--porsche-gold); box-shadow: 0 0 8px rgba(212, 175, 55, 0.2); }
+
+        .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .kpi-card {
+            background: var(--porsche-graphite); padding: 1.8rem; border-radius: 12px;
+            border: 1px solid var(--porsche-line); border-top: 3px solid var(--porsche-red); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .kpi-card:hover { transform: translateY(-4px); border-color: var(--porsche-gold); }
+        .kpi-card h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.6rem; font-weight: 600; }
+        .kpi-card .value { font-size: 2.2rem; font-weight: 700; color: var(--text-light); letter-spacing: -0.02em; }
+        .kpi-card .sub { color: var(--porsche-silver); font-size: 0.8rem; margin-top: 0.4rem; font-weight: 300; }
+
+        .executive-panel { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .panel-card {
+            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); padding: 1.8rem; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+        }
+        .panel-card.featured { border-left: 4px solid var(--porsche-gold); }
+        .panel-eyebrow { font-size: 0.7rem; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.6rem; font-weight: 600; }
+        .panel-card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--porsche-silver); }
+        .panel-card p { color: var(--text-muted); margin-bottom: 1.2rem; font-size: 0.95rem; font-weight: 300; }
+        
+        .metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+        .metric-pill { background: var(--porsche-dark); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.9rem; text-align: center; }
+        .metric-pill span { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.4rem; }
+        .metric-pill strong { font-size: 1rem; color: var(--porsche-silver); font-weight: 600; }
+
+        .insight-list { list-style: none; display: grid; gap: 0.8rem; }
+        .insight-list li { padding: 0.8rem 1rem; border-radius: 8px; background: var(--porsche-dark); border-left: 3px solid var(--porsche-red); color: var(--porsche-silver); font-size: 0.9rem; }
+
+        /* Map and Luxury Layout V2 */
+        .luxury-panel { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+        .luxury-map-container {
+            background: var(--porsche-graphite); border: 1px solid var(--porsche-line); border-radius: 12px; padding: 1.8rem; box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+        }
+        #porsche-map {
+            height: 450px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #0b0c0d;
+        }
+
+        /* Charts Section */
+        .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+        .chart-container { background: var(--porsche-graphite); padding: 1.8rem; border-radius: 12px; border: 1px solid var(--porsche-line); box-shadow: 0 15px 35px rgba(0,0,0,0.35); }
+        .chart-container h2 { font-size: 1.05rem; margin-bottom: 1.2rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--porsche-silver); border-left: 3px solid var(--porsche-gold); padding-left: 10px; }
+
+        /* Showcase Grid */
+        .popular-cars { margin-bottom: 3.5rem; }
+        .popular-cars h2 { font-size: 1.35rem; margin-bottom: 1.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--porsche-silver); border-bottom: 1px solid var(--porsche-line); padding-bottom: 0.8rem; }
+        .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .car-card {
+            background: var(--porsche-graphite); border-radius: 12px; overflow: hidden; border: 1px solid var(--porsche-line);
+            transition: all 0.3s ease; box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+        }
+        .car-card:hover { border-color: var(--porsche-gold); transform: translateY(-4px); box-shadow: 0 18px 36px rgba(0,0,0,0.55); }
+        .car-card-content { padding: 1.5rem; }
+        .car-card-badge { display: inline-block; margin-bottom: 0.8rem; padding: 0.35rem 0.75rem; border-radius: 4px; background: rgba(213,0,28,0.12); color: #FFA3A3; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; border: 1px solid rgba(213,0,28,0.25); }
+        .car-card-city { font-size: 0.75rem; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.4rem; font-weight: 600; }
+        .car-card-model { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.8rem; color: var(--text-light); }
+        .car-card-stats { display: flex; justify-content: space-between; color: var(--porsche-silver); font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem; font-weight: 500; }
+
+        /* Leaflet Dark Customizations */
+        .leaflet-popup-content-wrapper {
+            background: var(--porsche-graphite) !important;
+            color: var(--text-light) !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--porsche-gold) !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+        .leaflet-popup-tip {
+            background: var(--porsche-graphite) !important;
+            border: 1px solid var(--porsche-gold) !important;
+        }
+
+        /* About Block */
+        .about { background: var(--porsche-graphite); padding: 2rem; border-radius: 12px; border: 1px solid var(--porsche-line); box-shadow: 0 15px 35px rgba(0,0,0,0.35); }
+        .about h2 { margin-bottom: 1rem; font-weight: 600; color: var(--porsche-gold); text-transform: uppercase; letter-spacing: 0.12em; font-size: 1.2rem; }
+        .about p { color: var(--porsche-silver); line-height: 1.8; font-size: 0.95rem; font-weight: 300; }
+
+        @media (max-width: 1100px) { .executive-panel { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .container { padding: 1.5rem; } nav { padding: 1rem; flex-direction: column; gap: 1rem; } .metric-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Porsche <span>Executive</span></div>
+        <ul>
+            <li><a href="#dashboard" class="active">Dashboard</a></li>
+            <li><a href="#map-section">Presença Geográfica</a></li>
+            <li><a href="#popular">Vendas Populares</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">Apresentação Corporativa V2</div>
+        <!-- Stylized Minimalist Porsche Silhouette SVG Header -->
+        <svg class="hero-silhouette" viewBox="0 0 600 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M40 110 C 90 108, 110 88, 140 75 C 180 58, 230 48, 290 48 C 360 48, 410 56, 455 72 C 485 82, 505 105, 560 110" stroke="#D1D5DB" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.4"/>
+            <path d="M50 110 L 115 110 C 125 92, 155 92, 165 110 L 420 110 C 430 92, 460 92, 470 110 L 550 110" stroke="#D5001C" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="140" cy="110" r="14" stroke="#D4AF37" stroke-width="3" fill="#0F1012"/>
+            <circle cx="445" cy="110" r="14" stroke="#D4AF37" stroke-width="3" fill="#0F1012"/>
+        </svg>
+        <h1>Inteligência Automotiva</h1>
+        <p>Visão estratégica e monitoramento em tempo real dos indicadores de faturamento, performance regional de modelos e canais de pagamento da Porsche.</p>
+    </div>
+
+    <div class="container" id="dashboard">
+        <!-- Filters Block -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Modelo Porsche</label>
+                <select id="filter-model"><option value="ALL">Todos os Modelos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Ano do Modelo</label>
+                <select id="filter-year"><option value="ALL">Todos os Anos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Cidade Regional</label>
+                <select id="filter-city"><option value="ALL">Todas as Cidades</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Método de Pagamento</label>
+                <select id="filter-pay"><option value="ALL">Todos os Métodos</option></select>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpis">
+            <div class="kpi-card">
+                <h3>Total de Veículos Comercializados</h3>
+                <div class="value" id="kpi-count">0</div>
+                <div class="sub">Unidades sob o filtro ativo</div>
+            </div>
+            <div class="kpi-card" style="border-top-color: var(--porsche-gold);">
+                <h3>Volume Total de Vendas</h3>
+                <div class="value" id="kpi-revenue">$ 0</div>
+                <div class="sub">Valor total líquido consolidado</div>
+            </div>
+            <div class="kpi-card" style="border-top-color: var(--porsche-silver);">
+                <h3>Ticket Médio Corporativo</h3>
+                <div class="value" id="kpi-avg">$ 0</div>
+                <div class="sub">Valor médio por transação</div>
+            </div>
+        </div>
+
+        <!-- Executive Summaries -->
+        <div class="executive-panel">
+            <div class="panel-card featured">
+                <div class="panel-eyebrow">Diretoria Executiva</div>
+                <h3>Visão Estratégica Geral</h3>
+                <p id="executive-summary">Indicadores consolidados refletindo a liderança de mercado e faturamento por canal de atendimento regional.</p>
+                <div class="metric-row">
+                    <div class="metric-pill"><span>Modelo Líder</span><strong id="leader-model">-</strong></div>
+                    <div class="metric-pill"><span>Cidade Destaque</span><strong id="leader-city">-</strong></div>
+                    <div class="metric-pill"><span>Canal Principal</span><strong id="leader-pay">-</strong></div>
+                </div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-eyebrow">Insights Operacionais</div>
+                <ul id="executive-highlights" class="insight-list"></ul>
+            </div>
+        </div>
+
+        <!-- Interactive Map Section V2 -->
+        <div class="luxury-map-container" id="map-section" style="margin-bottom: 2.5rem;">
+            <div class="panel-eyebrow" style="margin-bottom: 0.4rem;">Geolocalização Ativa</div>
+            <h3 style="text-transform: uppercase; font-size: 1.15rem; letter-spacing: 0.08em; margin-bottom: 1.2rem; border-left: 3px solid var(--porsche-red); padding-left: 10px;">Presença Geográfica Real nos Estados Unidos</h3>
+            <div id="porsche-map"></div>
+        </div>
+
+        <!-- Graphical Charts Section -->
+        <div class="charts">
+            <div class="chart-container">
+                <h2>Volume de Vendas por Modelo</h2>
+                <canvas id="modelsChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Distribuição por Ano do Modelo</h2>
+                <canvas id="yearsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Regional Showcase Grid -->
+        <div class="popular-cars" id="popular">
+            <h2>Modelos Mais Populares por Cidade Demográfica</h2>
+            <div class="car-grid" id="car-grid"></div>
+        </div>
+
+        <!-- Document Metadata Footer -->
+        <div class="about" id="about">
+            <h2>Sobre o AI Report Executive Dashboard V2</h2>
+            <p>Desenvolvido para atender aos rígidos padrões estéticos de relatórios executivos, este painel consolidado integra bases geográficas dinâmicas com o mapa real dos EUA por meio da biblioteca Leaflet, utilizando a paleta oficial Dark Premium (Fundo grafite escuro, preto fosco, destaques em vermelho Porsche, prata e dourado ministerial) com a tipografia padrão Montserrat.</p>
+        </div>
+    </div>
+
+    <script>
+        // Real dataset from context
+        const porscheData = [{"CustomerNameSanitized": "Alexander Flores", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 91.3, "CitySanitized": "Miami", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Ethan Hunt", "PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 210.5, "CitySanitized": "New York", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Bruce Wayne", "PorscheModelSanitized": "Taycan Turbo S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 185.0, "CitySanitized": "Los Angeles", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Tony Stark", "PorscheModelSanitized": "911 GT3 RS", "ModelYearSanitized": 2024, "SalesPriceSanitized": 241.0, "CitySanitized": "Seattle", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Sarah Connor", "PorscheModelSanitized": "Macan GTS", "ModelYearSanitized": 2021, "SalesPriceSanitized": 82.5, "CitySanitized": "Austin", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "John Doe", "PorscheModelSanitized": "Panamera 4S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 110.0, "CitySanitized": "Chicago", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Jane Smith", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2023, "SalesPriceSanitized": 145.0, "CitySanitized": "Boston", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Clark Kent", "PorscheModelSanitized": "Cayenne Coupe", "ModelYearSanitized": 2022, "SalesPriceSanitized": 98.0, "CitySanitized": "Denver", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Diana Prince", "PorscheModelSanitized": "911 Carrera", "ModelYearSanitized": 2023, "SalesPriceSanitized": 125.0, "CitySanitized": "San Diego", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Barry Allen", "PorscheModelSanitized": "Taycan 4S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 115.0, "CitySanitized": "Phoenix", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Arthur Curry", "PorscheModelSanitized": "Macan S", "ModelYearSanitized": 2021, "SalesPriceSanitized": 75.2, "CitySanitized": "Dallas", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Hal Jordan", "PorscheModelSanitized": "911 Targa 4S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 160.0, "CitySanitized": "Las Vegas", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Oliver Queen", "PorscheModelSanitized": "Cayenne E-Hybrid", "ModelYearSanitized": 2022, "SalesPriceSanitized": 105.0, "CitySanitized": "San Jose", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Peter Parker", "PorscheModelSanitized": "718 Boxster GTS", "ModelYearSanitized": 2022, "SalesPriceSanitized": 92.0, "CitySanitized": "Houston", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Wanda Maximoff", "PorscheModelSanitized": "Panamera GTS", "ModelYearSanitized": 2023, "SalesPriceSanitized": 135.0, "CitySanitized": "Atlanta", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Steve Rogers", "PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 215.0, "CitySanitized": "Orlando", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2021, "SalesPriceSanitized": 79.3, "CitySanitized": "Portland", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 98.7, "CitySanitized": "Portland", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2021, "SalesPriceSanitized": 175.4, "CitySanitized": "Charlotte", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2021, "SalesPriceSanitized": 112.2, "CitySanitized": "Charlotte", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Panamera 4S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 196.7, "CitySanitized": "Nashville", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 175.2, "CitySanitized": "Nashville", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 132.8, "CitySanitized": "Minneapolis", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 92.4, "CitySanitized": "Minneapolis", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 219.1, "CitySanitized": "Philadelphia", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 166.2, "CitySanitized": "Philadelphia", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "911 Turbo S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 216.0, "CitySanitized": "San Antonio", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Panamera 4S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 194.8, "CitySanitized": "San Antonio", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2022, "SalesPriceSanitized": 206.4, "CitySanitized": "Salt Lake City", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2021, "SalesPriceSanitized": 139.6, "CitySanitized": "Salt Lake City", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2023, "SalesPriceSanitized": 102.7, "CitySanitized": "Raleigh", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 194.3, "CitySanitized": "Raleigh", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Panamera 4S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 165.8, "CitySanitized": "Detroit", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 139.5, "CitySanitized": "Detroit", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2023, "SalesPriceSanitized": 218.3, "CitySanitized": "Columbus", "PayMethodSanitized": "À Vista"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2021, "SalesPriceSanitized": 211.9, "CitySanitized": "Columbus", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Taycan Turbo S", "ModelYearSanitized": 2021, "SalesPriceSanitized": 110.9, "CitySanitized": "Indianapolis", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 142.3, "CitySanitized": "Indianapolis", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Cayenne S", "ModelYearSanitized": 2023, "SalesPriceSanitized": 98.7, "CitySanitized": "Fort Worth", "PayMethodSanitized": "Cartão de Crédito"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "718 Cayman GT4", "ModelYearSanitized": 2024, "SalesPriceSanitized": 227.6, "CitySanitized": "Fort Worth", "PayMethodSanitized": "Leasing"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Taycan Turbo S", "ModelYearSanitized": 2022, "SalesPriceSanitized": 244.5, "CitySanitized": "Jacksonville", "PayMethodSanitized": "Financiamento"}, {"CustomerNameSanitized": "Executivo Porsche", "PorscheModelSanitized": "Panamera 4S", "ModelYearSanitized": 2024, "SalesPriceSanitized": 90.5, "CitySanitized": "Jacksonville", "PayMethodSanitized": "À Vista"}];
+
+        // Approximate geographic coordinates mapping for real US cities mentioned in the data
+        const cityCoordinates = {
+            "Boston": [42.3601, -71.0589],
+            "Seattle": [47.6062, -122.3321],
+            "Austin": [30.2672, -97.7431],
+            "Denver": [39.7392, -104.9903],
+            "Los Angeles": [34.0522, -118.2437],
+            "Miami": [25.7617, -80.1918],
+            "New York": [40.7128, -74.0060],
+            "San Diego": [32.7157, -117.1611],
+            "Chicago": [41.8781, -87.6298],
+            "Phoenix": [33.4484, -112.0740],
+            "Dallas": [32.7767, -96.7970],
+            "Las Vegas": [36.1716, -115.1398],
+            "San Jose": [37.3382, -121.8863],
+            "Houston": [29.7604, -95.3698],
+            "Atlanta": [33.7490, -84.3880],
+            "Orlando": [28.5384, -81.3789],
+            "Portland": [45.5152, -122.6784],
+            "Charlotte": [35.2271, -80.8431],
+            "Nashville": [36.1627, -86.7816],
+            "Minneapolis": [44.9778, -93.2650],
+            "Philadelphia": [39.9526, -75.1652],
+            "San Antonio": [29.4241, -98.4936],
+            "Salt Lake City": [40.7608, -111.8910],
+            "Raleigh": [35.7796, -78.6382],
+            "Detroit": [42.3314, -83.0458],
+            "Columbus": [39.9612, -82.9988],
+            "Indianapolis": [39.7684, -86.1581],
+            "Fort Worth": [32.7555, -97.3308],
+            "Jacksonville": [30.3322, -81.6557]
+        };
+
+        let map, markerLayerGroup;
+        let modelsChartObj = null;
+        let yearsChartObj = null;
+
+        function formatCurrency(val) {
+            // Check if price is in short format like 68.9 or 241.0 (thousands)
+            let finalVal = val;
+            if (val > 0 && val < 1000) {
+                finalVal = val * 1000;
+            }
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(finalVal);
+        }
+
+        function initMap() {
+            // Render realistic dark tile layer from CartoDB DarkMatter
+            map = L.map('porsche-map', { attributionControl: false }).setView([37.8, -96], 4);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 18
+            }).addTo(map);
+            markerLayerGroup = L.layerGroup().addTo(map);
+        }
+
+        function updateMapMarkers(filteredData) {
+            markerLayerGroup.clearLayers();
+            
+            // Calculate city summary metrics
+            const citySummaries = {};
+            filteredData.forEach(item => {
+                const city = item.CitySanitized;
+                if (!city || city === "INVALID") return;
+                if (!citySummaries[city]) {
+                    citySummaries[city] = { count: 0, total: 0, model: {} };
+                }
+                citySummaries[city].count += 1;
+                let price = item.SalesPriceSanitized;
+                if (price < 1000) price *= 1000;
+                citySummaries[city].total += price;
+                
+                const model = item.PorscheModelSanitized;
+                citySummaries[city].model[model] = (citySummaries[city].model[model] || 0) + 1;
+            });
+
+            // Draw custom styled markers with beautiful popups
+            for (const city in citySummaries) {
+                if (cityCoordinates[city]) {
+                    const coords = cityCoordinates[city];
+                    const info = citySummaries[city];
+                    
+                    // Find top model in this city
+                    let topModel = "";
+                    let maxM = 0;
+                    for (const m in info.model) {
+                        if (info.model[m] > maxM) { maxM = info.model[m]; topModel = m; }
+                    }
+
+                    const popupContent = `
+                        <div style="font-size:0.85rem; line-height:1.4;">
+                            <strong style="color:var(--porsche-gold); font-size:0.95rem; text-transform:uppercase;">${city}</strong><br/>
+                            <span style="color:var(--text-muted)">Volume:</span> <b>${info.count} Unid.</b><br/>
+                            <span style="color:var(--text-muted)">Faturamento:</span> <b>${formatCurrency(info.total)}</b><br/>
+                            <span style="color:var(--text-muted)">Mais vendido:</span> <span style="color:var(--porsche-red)">${topModel}</span>
+                        </div>
+                    `;
+
+                    // Elegant circular circleMarker mirroring the premium aesthetic
+                    L.circleMarker(coords, {
+                        radius: Math.min(14, Math.max(7, info.count * 3.5)),
+                        fillColor: '#D5001C',
+                        color: '#D4AF37',
+                        weight: 1.5,
+                        opacity: 0.85,
+                        fillOpacity: 0.6
+                    }).addTo(markerLayerGroup).bindPopup(popupContent);
+                }
+            }
+        }
+
+        function buildFilters() {
+            const models = new Set();
+            const years = new Set();
+            const cities = new Set();
+            const payments = new Set();
+
+            porscheData.forEach(d => {
+                if (d.PorscheModelSanitized && d.PorscheModelSanitized !== "INVALID") models.add(d.PorscheModelSanitized);
+                if (d.ModelYearSanitized && typeof d.ModelYearSanitized === "number") years.add(d.ModelYearSanitized);
+                if (d.CitySanitized && d.CitySanitized !== "INVALID") cities.add(d.CitySanitized);
+                if (d.PayMethodSanitized && d.PayMethodSanitized !== "INVALID") payments.add(d.PayMethodSanitized);
+            });
+
+            const appendOptions = (id, items) => {
+                const el = document.getElementById(id);
+                Array.from(items).sort().forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item;
+                    opt.textContent = item;
+                    el.appendChild(opt);
+                });
+            };
+
+            appendOptions('filter-model', models);
+            appendOptions('filter-year', years);
+            appendOptions('filter-city', cities);
+            appendOptions('filter-pay', payments);
+
+            ['filter-model', 'filter-year', 'filter-city', 'filter-pay'].forEach(id => {
+                document.getElementById(id).addEventListener('change', processDataAndRender);
+            });
+        }
+
+        function processDataAndRender() {
+            const selModel = document.getElementById('filter-model').value;
+            const selYear = document.getElementById('filter-year').value;
+            const selCity = document.getElementById('filter-city').value;
+            const selPay = document.getElementById('filter-pay').value;
+
+            const filtered = porscheData.filter(d => {
+                if (selModel !== "ALL" && d.PorscheModelSanitized !== selModel) return false;
+                if (selYear !== "ALL" && String(d.ModelYearSanitized) !== selYear) return false;
+                if (selCity !== "ALL" && d.CitySanitized !== selCity) return false;
+                if (selPay !== "ALL" && d.PayMethodSanitized !== selPay) return false;
+                return true;
+            });
+
+            // Summary KPIs calculations
+            let count = filtered.length;
+            let revenue = 0;
+            const modelCounts = {}, cityCounts = {}, payCounts = {}, yearCounts = {};
+
+            filtered.forEach(d => {
+                let p = d.SalesPriceSanitized || 0;
+                if (p < 1000 && p > 0) p *= 1000; 
+                revenue += p;
+
+                if(d.PorscheModelSanitized) modelCounts[d.PorscheModelSanitized] = (modelCounts[d.PorscheModelSanitized] || 0) + 1;
+                if(d.CitySanitized) cityCounts[d.CitySanitized] = (cityCounts[d.CitySanitized] || 0) + 1;
+                if(d.PayMethodSanitized) payCounts[d.PayMethodSanitized] = (payCounts[d.PayMethodSanitized] || 0) + 1;
+                if(d.ModelYearSanitized) yearCounts[d.ModelYearSanitized] = (yearCounts[d.ModelYearSanitized] || 0) + 1;
+            });
+
+            let avg = count > 0 ? (revenue / count) : 0;
+
+            document.getElementById('kpi-count').textContent = count;
+            document.getElementById('kpi-revenue').textContent = formatCurrency(revenue);
+            document.getElementById('kpi-avg').textContent = formatCurrency(avg);
+
+            // Leaders helper
+            const getLeader = (obj) => {
+                let leader = "-"; let max = 0;
+                for(const k in obj) { if(obj[k] > max && k !== "INVALID") { max = obj[k]; leader = k; } }
+                return leader;
+            };
+
+            const leaderModel = getLeader(modelCounts);
+            const leaderCity = getLeader(cityCounts);
+            const leaderPay = getLeader(payCounts);
+
+            document.getElementById('leader-model').textContent = leaderModel;
+            document.getElementById('leader-city').textContent = leaderCity;
+            document.getElementById('leader-pay').textContent = leaderPay;
+
+            // Operational insights dynamic bullet items
+            const highlightsUl = document.getElementById('executive-highlights');
+            highlightsUl.innerHTML = "";
+            if (count > 0) {
+                const li1 = document.createElement('li');
+                li1.textContent = `O portfólio ${leaderModel} representa a maior preferência de compra no escopo selecionado.`;
+                const li2 = document.createElement('li');
+                li2.textContent = `A praça de ${leaderCity} demonstra maior tração comercial absoluta de vendas acumuladas.`;
+                const li3 = document.createElement('li');
+                li3.textContent = `A preferência financeira por ${leaderPay} simplifica o fluxo das negociações correntes.`;
+                highlightsUl.appendChild(li1);
+                highlightsUl.appendChild(li2);
+                highlightsUl.appendChild(li3);
+            } else {
+                const li = document.createElement('li');
+                li.textContent = "Nenhum dado encontrado para os filtros selecionados.";
+                highlightsUl.appendChild(li);
+            }
+
+            // Draw Charts with beautiful gradient fills
+            renderCharts(modelCounts, yearCounts);
+
+            // Map pins update
+            updateMapMarkers(filtered);
+
+            // Popular showcases update
+            renderShowcase(filtered);
+        }
+
+        function renderCharts(modelCounts, yearCounts) {
+            // Models Chart with linear gradient
+            const modelsCtx = document.getElementById('modelsChart').getContext('2d');
+            const sortedModels = Object.keys(modelCounts).sort((a,b) => modelCounts[b] - modelCounts[a]).slice(0, 7);
+            const modelDataValues = sortedModels.map(m => modelCounts[m]);
+
+            if (modelsChartObj) modelsChartObj.destroy();
+            
+            const grad1 = modelsCtx.createLinearGradient(0, 0, 0, 300);
+            grad1.addColorStop(0, 'rgba(213, 0, 28, 0.85)'); // Porsche Red
+            grad1.addColorStop(1, 'rgba(20, 21, 23, 0.1)');
+
+            modelsChartObj = new Chart(modelsCtx, {
+                type: 'bar',
+                data: {
+                    labels: sortedModels,
+                    datasets: [{
+                        label: 'Unidades Vendidas',
+                        data: modelDataValues,
+                        backgroundColor: grad1,
+                        borderColor: '#D5001C',
+                        borderWidth: 1.5,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9CA3AF', font: { family: 'Montserrat' } }, grid: { display: false } },
+                        y: { ticks: { color: '#9CA3AF', font: { family: 'Montserrat' } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+
+            // Years Line Chart with gradient filling
+            const yearsCtx = document.getElementById('yearsChart').getContext('2d');
+            const sortedYears = Object.keys(yearCounts).sort();
+            const yearDataValues = sortedYears.map(y => yearCounts[y]);
+
+            if (yearsChartObj) yearsChartObj.destroy();
+
+            const grad2 = yearsCtx.createLinearGradient(0, 0, 0, 300);
+            grad2.addColorStop(0, 'rgba(212, 175, 55, 0.4)'); // Premium Gold Gradient
+            grad2.addColorStop(1, 'rgba(15, 16, 18, 0)');
+
+            yearsChartObj = new Chart(yearsCtx, {
+                type: 'line',
+                data: {
+                    labels: sortedYears,
+                    datasets: [{
+                        label: 'Volume por Ano',
+                        data: yearDataValues,
+                        fill: true,
+                        backgroundColor: grad2,
+                        borderColor: '#D4AF37',
+                        borderWidth: 2,
+                        tension: 0.35,
+                        pointBackgroundColor: '#D5001C'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9CA3AF', font: { family: 'Montserrat' } }, grid: { display: false } },
+                        y: { ticks: { color: '#9CA3AF', font: { family: 'Montserrat' } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+        }
+
+        function renderShowcase(filteredData) {
+            const grid = document.getElementById('car-grid');
+            grid.innerHTML = "";
+
+            const cityData = {};
+            filteredData.forEach(item => {
+                const city = item.CitySanitized;
+                const model = item.PorscheModelSanitized;
+                let price = item.SalesPriceSanitized || 0;
+                if (price < 1000 && price > 0) price *= 1000;
+
+                if (!city || city === "INVALID" || !model || model === "INVALID") return;
+
+                if (!cityData[city]) cityData[city] = {};
+                if (!cityData[city][model]) cityData[city][model] = { count: 0, sumPrice: 0 };
+
+                cityData[city][model].count += 1;
+                cityData[city][model].sumPrice += price;
+            });
+
+            const topCities = Object.keys(cityData).slice(0, 12);
+
+            topCities.forEach(city => {
+                let bestModel = '';
+                let maxCount = 0;
+                let avgPrice = 0;
+
+                for(const model in cityData[city]) {
+                    if(cityData[city][model].count > maxCount) {
+                        maxCount = cityData[city][model].count;
+                        bestModel = model;
+                        avgPrice = cityData[city][model].sumPrice / maxCount;
+                    }
+                }
+
+                if(bestModel) {
+                    const card = document.createElement('div');
+                    card.className = 'car-card';
+                    card.innerHTML = `
+                        <div class="car-card-content">
+                            <div class="car-card-badge">Prioridade Regional</div>
+                            <div class="car-card-city">Popular em ${city}</div>
+                            <div class="car-card-model">${bestModel}</div>
+                            <div class="car-card-stats">
+                                <span>Média: ${formatCurrency(avgPrice)}</span>
+                                <span style="color: var(--porsche-gold)">${maxCount} Vendas</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        window.onload = function() {
+            buildFilters();
+            initMap();
+            processDataAndRender();
+        };
+    </script>
+</body>
+</html>
+index-v2.html
+Exibindo index-v2.html.
