@@ -386,7 +386,7 @@
 
         function initMap() {
     map = L.map('porsche-map', { attributionControl: false }).setView([37.8, -96], 4);
- L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
         maxZoom: 18
     }).addTo(map);
     markerLayerGroup = L.layerGroup().addTo(map);
