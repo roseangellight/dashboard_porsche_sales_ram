@@ -385,14 +385,14 @@
         }
 
         function initMap() {
-            // Render realistic dark tile layer from CartoDB DarkMatter
-            map = L.map('porsche-map', { attributionControl: false }).setView([37.8, -96], 4);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                maxZoom: 18
-            }).addTo(map);
-            markerLayerGroup = L.layerGroup().addTo(map);
-        }
-
+    map = L.map('porsche-map', { attributionControl: false }).setView([37.8, -96], 4);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 18,
+        subdomains: 'abcd'
+    }).addTo(map);
+    markerLayerGroup = L.layerGroup().addTo(map);
+}
+       
         function updateMapMarkers(filteredData) {
             markerLayerGroup.clearLayers();
             
